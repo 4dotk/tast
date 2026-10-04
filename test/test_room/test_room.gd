@@ -1,73 +1,74 @@
 extends Node3D
-## Stalker test room: build a scenario, then run the Stalker against it.
+## Player vs monsters test room.
+##
+## The Dummy is a real, always-controllable player. It is never frozen:
+##   W/S - walk forward / back, A/D - turn (Q lock-on makes A/D strafe),
+##   F - toggle the flashlight.
 ##
 ## Workflow
-##   1. PLACE DUMMY   WASD move the Dummy, E place it.
-##   2. READY         O  add an obstacle cube (ghost; WASD moves it, E places it,
-##                       Esc cancels). Repeat as often as you like.
-##                    Backspace removes the last cube, P picks the Dummy up again.
-##   3. T             start the test. The Dummy is locked in place;
-##                    WASD only turns it so the flashlight can be aimed, F toggles it.
-##   4. T again       stops the test.
-##   5. Dummy dies    the monster stops, is put at a random spot on the floor and
-##                    waits. Press T to run again.
+##   1. PREPARE   N places an enemy: a ghost appears, the arrow keys move it,
+##                E spawns it (you keep placing more), Tab switches the type
+##                (Stalker / Seeker), Esc cancels. O adds an obstacle cube
+##                (WASD moves it, E places it), Backspace removes the last cube.
+##   2. T        Start the test: every placed enemy activates and goes after
+##               the player.
+##   3. T again  Stop: enemies are deactivated and returned to where you
+##               placed them. Press T to run again.
+##   4. Player dies  the monsters stop, the Dummy respawns at its start
+##                 position. Press T to run again.
 ##
-## Placement rules: cubes can not overlap each other, and cubes / Dummy /
-## monsters keep a minimum distance so nothing spawns inside anything else.
+## The monsters' AI is untouched - they are just instanced, placed and
+## activated here.
 
-enum Phase { PLACE_DUMMY, READY, PLACE_CUBE, RUNNING, RESETTING }
-enum MonsterMode { STALKER, SEEKER, BOTH }
+enum Phase { PREPARE, PLACE_ENEMY, PLACE_CUBE, RUNNING, RESETTING }
+enum EnemyType { STALKER, SEEKER }
+
+const STALKER_SCENE := preload("res://entities/monsters/stalker/stalker.tscn")
+const SEEKER_SCENE := preload("res://entities/monsters/seeker/seeker.tscn")
 
 ## Edge length of an obstacle cube (meters).
 const CUBE_SIZE := 1.5
 ## The walkable navmesh reaches +-14.5; keep things inside it.
 const NAV_EDGE := 14.5
-## Dummy centre must stay this far from any cube surface (so the Stalker can
-## still path next to it).
-const DUMMY_CLEARANCE := 1.2
-## Stalker centre must stay this far from any cube surface.
-const STALKER_CLEARANCE := 1.0
-## Seeker centre must stay this far from any cube surface.
-const SEEKER_CLEARANCE := 1.0
-## Minimum distance between the Dummy and the monster when placing.
+## Keep the player on the floor.
+const FLOOR_EDGE := 14.5
+## A monster must stay this far from a cube surface / the player.
+const MONSTER_CLEARANCE := 1.0
 const DUMMY_MONSTER_MIN := 2.5
-## Random monster spawns are at least this far from the Dummy.
-const RANDOM_MIN_DIST := 6.0
-## Ghost cube speed while placing (m/s).
+## Two monsters keep this center-to-center distance.
+const MONSTER_GAP := 2.0
+## Ghost speed while placing (m/s).
 const GHOST_SPEED := 7.0
 
 @onready var _debug_label: Label = $Debug/DebugLabel
-@onready var _stalker: Stalker = $Stalker
-@onready var _seeker_spawn: Marker3D = $SeekerSpawn
 @onready var _subject: TestSubject = $TestSubject
 @onready var _nav: TestRoomNav = $Room/Navigation
 
-var _phase := Phase.PLACE_DUMMY
-var _monster_mode := MonsterMode.STALKER
+var _phase := Phase.PREPARE
+var _enemy_type := EnemyType.STALKER
+## Placed (but currently inactive) monsters.
+var _monsters: Array[Node3D] = []
+## instance_id -> the spot the monster was placed at (its home).
+var _monster_home: Dictionary = {}
 var _cubes: Array[StaticBody3D] = []
-var _ghost: MeshInstance3D
+var _enemy_ghost: MeshInstance3D
+var _cube_ghost: MeshInstance3D
 var _ghost_material: StandardMaterial3D
 var _cube_material: StandardMaterial3D
 var _marker: MeshInstance3D
 var _marker_material: StandardMaterial3D
-var _last_ghost_pos := Vector3.ZERO
+var _last_enemy_pos := Vector3.ZERO
+var _last_cube_pos := Vector3.ZERO
 var _baking := false
 var _message := ""
 var _message_time := 0.0
-var _seeker: Seeker = null
-var _stalker_present := true
-var _seeker_marker: MeshInstance3D
 
 
 func _ready() -> void:
 	_ensure_input_actions()
-	_stalker.player_killed.connect(_on_stalker_killed)
-	_nav.rebake_finished.connect(_on_rebake_finished)
 	_build_materials()
-	_build_marker()
-	_apply_mode_presence()
-	_enter_place_dummy()
-	print("Stalker test room ready.  E place | O cube | T start/stop | Tab swap monster | F toggle light | Esc menu")
+	_build_ghosts()
+	print("Player vs monsters room.  WASD move | N enemy (arrows, E) | O cube | Tab type | T start | Esc menu")
 
 
 # ------------------------------------------------------------------- setup
@@ -88,33 +89,37 @@ func _build_materials() -> void:
 	_marker_material.albedo_color = Color(0.2, 1.0, 0.3, 0.5)
 
 
-## Flat disc under the Dummy that turns red when its spot is not allowed.
-func _build_marker() -> void:
+func _build_ghosts() -> void:
+	# Enemy ghost: a translucent capsule roughly body-sized.
+	var cap := CapsuleMesh.new()
+	cap.radius = 0.4
+	cap.height = 1.8
+	cap.material = _ghost_material
+	_enemy_ghost = MeshInstance3D.new()
+	_enemy_ghost.mesh = cap
+	_enemy_ghost.visible = false
+	_enemy_ghost.position = Vector3(0.0, cap.height * 0.5, 0.0)
+	add_child(_enemy_ghost)
+
+	# Cube ghost.
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE * CUBE_SIZE
+	box.material = _ghost_material
+	_cube_ghost = MeshInstance3D.new()
+	_cube_ghost.mesh = box
+	_cube_ghost.visible = false
+	add_child(_cube_ghost)
+
+	# Validity marker disc under the active ghost.
 	var disc := CylinderMesh.new()
-	disc.top_radius = 0.7
-	disc.bottom_radius = 0.7
+	disc.top_radius = 0.8
+	disc.bottom_radius = 0.8
 	disc.height = 0.02
 	disc.material = _marker_material
 	_marker = MeshInstance3D.new()
 	_marker.mesh = disc
 	_marker.visible = false
 	add_child(_marker)
-
-	# Orange disc where the Seeker will spawn (only shown in SEEKER / BOTH).
-	var seeker_disc := CylinderMesh.new()
-	seeker_disc.top_radius = 0.7
-	seeker_disc.bottom_radius = 0.7
-	seeker_disc.height = 0.02
-	var seeker_disc_material := StandardMaterial3D.new()
-	seeker_disc_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	seeker_disc_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	seeker_disc_material.albedo_color = Color(1.0, 0.55, 0.1, 0.5)
-	seeker_disc.material = seeker_disc_material
-	_seeker_marker = MeshInstance3D.new()
-	_seeker_marker.mesh = seeker_disc
-	_seeker_marker.visible = false
-	add_child(_seeker_marker)
-	_seeker_marker.global_position = Vector3(_seeker_spawn.global_position.x, 0.02, _seeker_spawn.global_position.z)
 
 
 ## Make sure the test-only input actions exist, so the room works even if
@@ -133,261 +138,235 @@ func _ensure_input_actions() -> void:
 		InputMap.action_add_event(action, key)
 
 
-# ------------------------------------------------------------------- phases
+# ------------------------------------------------------------------- enemies
 
-func _enter_place_dummy() -> void:
-	_phase = Phase.PLACE_DUMMY
-	_subject.set_locked(false)
-	_subject.input_enabled = true
-	_marker.visible = true
+func _enemy_name() -> String:
+	return "Stalker" if _enemy_type == EnemyType.STALKER else "Seeker"
 
 
-func _enter_ready() -> void:
-	_phase = Phase.READY
-	_subject.set_locked(true)
-	_subject.input_enabled = false
-	_marker.visible = false
+func _begin_enemy_ghost() -> void:
+	_enemy_ghost.visible = true
+	_enemy_ghost.position = Vector3(_last_enemy_pos.x, _enemy_ghost.position.y, _last_enemy_pos.z)
+	_phase = Phase.PLACE_ENEMY
+	_say("Placing a %s. Arrows move, E spawn, Esc cancel." % _enemy_name())
 
+
+func _cycle_enemy_type() -> void:
+	match _phase:
+		Phase.RUNNING, Phase.RESETTING:
+			_say("Stop the test first (T) to change the enemy type.")
+			return
+	_enemy_type = EnemyType.SEEKER if _enemy_type == EnemyType.STALKER else EnemyType.STALKER
+	_say("Placing a %s." % _enemy_name())
+
+
+func _spawn_enemy_at(pos: Vector3) -> void:
+	var monster: Node3D
+	if _enemy_type == EnemyType.STALKER:
+		var st := STALKER_SCENE.instantiate() as Stalker
+		st.visible = false
+		add_child(st)
+		st.relocate(pos)
+		st.visible = true
+		st.player_killed.connect(_on_player_killed.bind(st))
+		monster = st
+	else:
+		var sk := SEEKER_SCENE.instantiate() as Seeker
+		sk.visible = false
+		add_child(sk)
+		sk.show_debug_label = true
+		sk.place_at(pos)
+		sk.visible = true
+		sk.killed_holder.connect(_on_seeker_killed_holder)
+		sk.killed_monster.connect(_on_seeker_killed_monster)
+		sk.destroyed_obstacle.connect(_on_seeker_destroyed_obstacle)
+		monster = sk
+	_monsters.append(monster)
+	_monster_home[monster.get_instance_id()] = pos
+
+
+# --------------------------------------------------------------- start / stop
 
 func _start_test() -> void:
 	if _subject.is_in_group("dead"):
-		_say("Dummy is respawning, wait a moment.")
+		_say("The player is respawning, wait a moment.")
 		return
 	if _baking:
-		_say("Navmesh is still baking, wait a moment.")
+		_say("The navmesh is still baking, wait a moment.")
+		return
+	if _monsters.is_empty():
+		_say("Place an enemy first (N).")
 		return
 	_phase = Phase.RUNNING
-	_subject.input_enabled = true  # WASD turns the Dummy so the torch can be aimed
-	_spawn_monsters()
-	_say("Test running.")
+	for m in _monsters:
+		_activate(m)
+	_say("Test running with %d enem%s." % [_monsters.size(), "y" if _monsters.size() == 1 else "ies"])
 
 
-func _spawn_monsters() -> void:
-	_clear_monsters()
-	_apply_mode_presence()
-	if _mode_has_stalker():
-		_stalker.activate()
-	if _mode_has_seeker():
-		_seeker = _spawn_seeker()
-		_seeker.activate()
-
-
-func _spawn_seeker() -> Seeker:
-	var seeker_scene := preload("res://entities/monsters/seeker/seeker.tscn")
-	var seeker_instance := seeker_scene.instantiate() as Seeker
-	seeker_instance.show_debug_label = true
-	add_child(seeker_instance)
-	# Tether (home) is the seeker spawn point.
-	seeker_instance.place_at(_seeker_spawn.global_position)
-	seeker_instance.killed_holder.connect(_on_seeker_killed_holder)
-	seeker_instance.killed_monster.connect(_on_seeker_killed_monster)
-	seeker_instance.destroyed_obstacle.connect(_on_seeker_destroyed_obstacle)
-	return seeker_instance
-
-
-func _clear_monsters() -> void:
-	if _stalker and _stalker.is_inside_tree():
-		_stalker.deactivate()
-	_free_seeker()
-
-
-func _free_seeker() -> void:
-	if _seeker and is_instance_valid(_seeker):
-		_seeker.get_parent().remove_child(_seeker)
-		_seeker.queue_free()
-	_seeker = null
-
-
-func _mode_has_stalker() -> bool:
-	return _monster_mode == MonsterMode.STALKER or _monster_mode == MonsterMode.BOTH
-
-
-func _mode_has_seeker() -> bool:
-	return _monster_mode == MonsterMode.SEEKER or _monster_mode == MonsterMode.BOTH
-
-
-## The Stalker is a fixed node of this room, so "removing" it means hiding it
-## and switching its body and processing off (and the reverse to bring it back).
-func _set_stalker_present(present: bool) -> void:
-	_stalker_present = present
-	_stalker.visible = present
-	_stalker.process_mode = Node.PROCESS_MODE_INHERIT if present else Node.PROCESS_MODE_DISABLED
-	var body_shape := _stalker.get_node("Collision") as CollisionShape3D
-	body_shape.set_deferred("disabled", not present)
-
-
-func _apply_mode_presence() -> void:
-	_set_stalker_present(_mode_has_stalker())
-	_seeker_marker.visible = _mode_has_seeker()
-
-
-## Stop the monster and put it somewhere random; it waits for the next T.
 func _stop_test(message: String) -> void:
-	_free_seeker()
-	if _stalker and _stalker.is_inside_tree():
-		if _mode_has_stalker():
-			_set_stalker_present(true)
-			_stalker.relocate(_random_stalker_position())
-		else:
-			_stalker.deactivate()
-	_subject.input_enabled = false
-	_phase = Phase.READY
+	for m in _monsters:
+		_return_monster_home(m)
+	_phase = Phase.PREPARE
 	_say(message)
 
 
-func _on_stalker_killed(_victim: Node3D) -> void:
-	# Let the punch finish, then stop the Stalker so it does not keep killing
-	# the Dummy when it respawns.
-	_begin_reset(_stalker.punch_duration + 0.3, "Dummy died. Stalker moved to a random spot. Press T to run again.")
+func _activate(m: Node3D) -> void:
+	if m is Stalker:
+		(m as Stalker).activate()
+	elif m is Seeker:
+		(m as Seeker).activate()
 
 
-func _on_seeker_killed_holder(_source: Node3D) -> void:
-	_begin_reset(1.0, "Seeker destroyed the torch and the Dummy died. Press T to run again.")
-
-
-## The Stalker has no die() of its own, so the room takes it out of play.
-func _on_seeker_killed_monster(monster: Node3D) -> void:
-	if monster == _stalker:
-		_stalker.deactivate()
-		_set_stalker_present(false)
-		_say("Seeker killed the Stalker.")
-
-
-## A cube the Seeker smashed: forget it and let the navmesh open up.
-func _on_seeker_destroyed_obstacle(obstacle: Node3D) -> void:
-	_cubes.erase(obstacle)
-	_request_rebake()
-	_say("Seeker smashed a cube (%d left)." % _cubes.size())
-
-
-func _begin_reset(delay: float, message: String) -> void:
-	if _phase != Phase.RUNNING:
+func _return_monster_home(m: Node3D) -> void:
+	if not is_instance_valid(m):
 		return
-	_phase = Phase.RESETTING
-	_subject.input_enabled = false
-	get_tree().create_timer(delay).timeout.connect(
-		func() -> void:
-			_stop_test(message),
-		CONNECT_ONE_SHOT
-	)
+	var pos: Vector3 = _monster_home.get(m.get_instance_id(), m.global_position)
+	if m is Stalker:
+		(m as Stalker).relocate(pos)
+	elif m is Seeker:
+		(m as Seeker).place_at(pos)
+		(m as Seeker).deactivate()
 
 
-# -------------------------------------------------------------------- input
+# --------------------------------------------------------------------- input
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
 
-	# Handle physical Tab directly. This avoids relying on the runtime
-	# InputMap action when switching enemy types.
 	if key != null and key.pressed and not key.echo and key.physical_keycode == KEY_TAB:
-		_cycle_monster_mode()
+		_cycle_enemy_type()
 		get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed(&"test_back_to_menu") and not event.is_echo():
-		if _phase == Phase.PLACE_CUBE:
+		if _phase == Phase.PLACE_ENEMY:
+			_cancel_enemy_ghost()
+		elif _phase == Phase.PLACE_CUBE:
 			_cancel_cube_ghost()
 		else:
 			get_tree().change_scene_to_file("res://ui/menus/main_menu/main_menu.tscn")
 		get_viewport().set_input_as_handled()
-	else:
-		if key == null or not key.pressed or key.echo:
-			return
-		print("key: ", OS.get_keycode_string(key.physical_keycode), "  phase: ", Phase.keys()[_phase], "  mode: ", MonsterMode.keys()[_monster_mode])
-		match key.physical_keycode:
-			KEY_E:
-				if _phase == Phase.PLACE_DUMMY or _phase == Phase.PLACE_CUBE:
-					_confirm_place()
-				else:
-					_say("E places the Dummy / a cube while you are placing one.")
-			KEY_O:
-				match _phase:
-					Phase.PLACE_DUMMY:
-						# Convenience: O also confirms the Dummy, then starts a cube.
-						if _dummy_spot_valid():
-							_enter_ready()
-							_begin_cube_ghost()
-						else:
-							_say("Can't place the Dummy here (red disc). Move it, then press O.")
-					Phase.READY:
-						_begin_cube_ghost()
-					Phase.PLACE_CUBE:
-						_say("Already placing a cube: E to place, Esc to cancel.")
-					_:
-						_say("Stop the test first (T), then add cubes.")
-			KEY_BACKSPACE:
-				if _phase == Phase.READY:
-					_remove_last_cube()
-				else:
-					_say("Backspace removes the last cube (only in READY mode).")
-			KEY_P:
-				if _phase == Phase.READY:
-					_enter_place_dummy()
-			KEY_T:
-				match _phase:
-					Phase.READY:
-						_start_test()
-					Phase.RUNNING:
-						_stop_test("Test stopped. Monster moved to a random spot. Press T to run again.")
-					Phase.PLACE_DUMMY:
-						_say("Place the Dummy first (E).")
-					Phase.PLACE_CUBE:
-						_say("Place or cancel the cube first (E / Esc).")
-			_:
-				return
-		get_viewport().set_input_as_handled()
-
-
-func _cycle_monster_mode() -> void:
-	if _phase == Phase.RUNNING:
-		_say("Stop the test first (T) to change monster mode.")
 		return
-	_monster_mode = ((int(_monster_mode) + 1) % MonsterMode.size()) as MonsterMode
-	_apply_mode_presence()
-	_say("Monster mode: %s" % MonsterMode.keys()[_monster_mode])
+
+	if key == null or not key.pressed or key.echo:
+		return
+	match key.physical_keycode:
+		KEY_N:
+			_on_place_enemy_key()
+		KEY_O:
+			_on_add_cube_key()
+		KEY_E:
+			_on_confirm_key()
+		KEY_BACKSPACE:
+			_on_remove_cube_key()
+		KEY_T:
+			_on_start_stop_key()
+		_:
+			return
+	get_viewport().set_input_as_handled()
 
 
-func _confirm_place() -> void:
+func _on_place_enemy_key() -> void:
 	match _phase:
-		Phase.PLACE_DUMMY:
-			if not _dummy_spot_valid():
-				_say("Can't place the Dummy here (too close to a cube or the monster).")
-				return
-			_enter_ready()
-			_say("Dummy placed. O = add cube, T = start.")
+		Phase.PREPARE:
+			_begin_enemy_ghost()
+		Phase.PLACE_ENEMY:
+			_say("Already placing an enemy: E to spawn, Esc to cancel.")
 		Phase.PLACE_CUBE:
-			if not _ghost_spot_valid():
-				_say("Can't place a cube here.")
-				return
-			_place_cube()
+			_say("Finish the cube first (E / Esc).")
+		Phase.RUNNING, Phase.RESETTING:
+			_say("Stop the test first (T).")
+
+
+func _on_add_cube_key() -> void:
+	match _phase:
+		Phase.PREPARE:
+			_begin_cube_ghost()
+		Phase.PLACE_CUBE:
+			_say("Already placing a cube: E to place, Esc to cancel.")
+		Phase.PLACE_ENEMY:
+			_say("Finish the enemy first (E / Esc).")
+		Phase.RUNNING, Phase.RESETTING:
+			_say("Stop the test first (T).")
+
+
+func _on_confirm_key() -> void:
+	match _phase:
+		Phase.PLACE_ENEMY:
+			_confirm_enemy_place()
+		Phase.PLACE_CUBE:
+			_confirm_cube_place()
+		Phase.PREPARE:
+			_say("Nothing to place. N places an enemy, O adds a cube.")
+		Phase.RUNNING, Phase.RESETTING:
+			_say("The test is running. T stops it.")
+
+
+func _on_remove_cube_key() -> void:
+	if _phase == Phase.PREPARE:
+		_remove_last_cube()
+	else:
+		_say("Backspace removes the last cube (in PREPARE).")
+
+
+func _on_start_stop_key() -> void:
+	match _phase:
+		Phase.PREPARE:
+			_start_test()
+		Phase.RUNNING:
+			_stop_test("Test stopped. Enemies wait where you placed them. Press T to run again.")
+		Phase.PLACE_ENEMY, Phase.PLACE_CUBE:
+			_say("Finish or cancel the placement first (E / Esc).")
+		Phase.RESETTING:
+			_say("Waiting for the player to respawn.")
+
+
+func _cancel_enemy_ghost() -> void:
+	if _enemy_ghost:
+		_last_enemy_pos = Vector3(_enemy_ghost.position.x, 0.0, _enemy_ghost.position.z)
+		_enemy_ghost.visible = false
+	_phase = Phase.PREPARE
+
+
+func _cancel_cube_ghost() -> void:
+	if _cube_ghost:
+		_last_cube_pos = _cube_ghost.position
+		_cube_ghost.visible = false
+	_phase = Phase.PREPARE
+
+
+# ------------------------------------------------------------------- enemies
+
+func _confirm_enemy_place() -> void:
+	if not _enemy_spot_valid():
+		_say("Can't place the enemy here (too close to the player, another enemy or a cube).")
+		return
+	var pos := Vector3(_enemy_ghost.position.x, 0.0, _enemy_ghost.position.z)
+	_spawn_enemy_at(pos)
+	_last_enemy_pos = pos
+	_say("Placed a %s. E places more, T starts the test." % _enemy_name())
 
 
 # ------------------------------------------------------------------- cubes
 
 func _begin_cube_ghost() -> void:
-	var box := BoxMesh.new()
-	box.size = Vector3.ONE * CUBE_SIZE
-	box.material = _ghost_material
-	_ghost = MeshInstance3D.new()
-	_ghost.mesh = box
-	_ghost.position = Vector3(_last_ghost_pos.x, CUBE_SIZE * 0.5, _last_ghost_pos.z)
-	add_child(_ghost)
+	_cube_ghost.visible = true
+	_cube_ghost.position = Vector3(_last_cube_pos.x, CUBE_SIZE * 0.5, _last_cube_pos.z)
 	_phase = Phase.PLACE_CUBE
 	_say("Cube ghost spawned in the middle of the floor. WASD move, E place.")
 
 
-func _cancel_cube_ghost() -> void:
-	_ghost.queue_free()
-	_ghost = null
-	_phase = Phase.READY
+func _confirm_cube_place() -> void:
+	if not _cube_spot_valid():
+		_say("Can't place the cube here (overlap or too close).")
+		return
+	_place_cube()
 
 
 func _place_cube() -> void:
-	var pos := _ghost.position
-	_last_ghost_pos = pos
-	_ghost.queue_free()
-	_ghost = null
-
+	var pos := _cube_ghost.position
+	_last_cube_pos = pos
+	_cube_ghost.visible = false
 	var body := StaticBody3D.new()
 	body.add_to_group("obstacle")
 	var shape := CollisionShape3D.new()
@@ -401,12 +380,10 @@ func _place_cube() -> void:
 	box.material = _cube_material
 	mesh.mesh = box
 	body.add_child(mesh)
-	# Child of the navigation region so the navmesh bake carves around it.
 	_nav.add_child(body)
 	body.global_position = pos
 	_cubes.append(body)
-
-	_phase = Phase.READY
+	_phase = Phase.PREPARE
 	_request_rebake()
 	_say("Cube placed (%d total)." % _cubes.size())
 
@@ -416,7 +393,6 @@ func _remove_last_cube() -> void:
 		_say("No cubes to remove.")
 		return
 	var cube: StaticBody3D = _cubes.pop_back()
-	# Take it out of the tree right away so the rebake no longer sees it.
 	cube.get_parent().remove_child(cube)
 	cube.queue_free()
 	_request_rebake()
@@ -461,82 +437,136 @@ func _flat_dist(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
 
 
-func _ghost_spot_valid() -> bool:
-	if _ghost == null:
+func _enemy_spot_valid() -> bool:
+	if _enemy_ghost == null:
 		return false
-	var p := _ghost.position
+	var p := Vector3(_enemy_ghost.position.x, 0.0, _enemy_ghost.position.z)
+	if absf(p.x) > NAV_EDGE or absf(p.z) > NAV_EDGE:
+		return false
+	if _flat_dist(p, _subject.global_position) < DUMMY_MONSTER_MIN:
+		return false
+	for m in _monsters:
+		if _flat_dist(p, m.global_position) < MONSTER_GAP:
+			return false
+	if _min_dist_to_cubes(p) < MONSTER_CLEARANCE:
+		return false
+	return true
+
+
+func _cube_spot_valid() -> bool:
+	if _cube_ghost == null:
+		return false
+	var p := _cube_ghost.position
 	for cube in _cubes:
-		var c := cube.global_position
+		var c: Vector3 = cube.global_position
 		if absf(p.x - c.x) < CUBE_SIZE and absf(p.z - c.z) < CUBE_SIZE:
-			return false  # overlaps another cube
-	if _dist_to_cube(_subject.global_position, p) < DUMMY_CLEARANCE:
+			return false
+	if _dist_to_cube(_subject.global_position, p) < MONSTER_CLEARANCE:
 		return false
-	if _stalker_present and _dist_to_cube(_stalker.global_position, p) < STALKER_CLEARANCE:
-		return false
-	if _mode_has_seeker() and _dist_to_cube(_seeker_spawn.global_position, p) < SEEKER_CLEARANCE:
-		return false
+	for m in _monsters:
+		if _dist_to_cube(m.global_position, p) < MONSTER_CLEARANCE:
+			return false
 	return true
 
 
-func _dummy_spot_valid() -> bool:
-	var p := _subject.global_position
-	if _min_dist_to_cubes(p) < DUMMY_CLEARANCE:
-		return false
-	if _stalker_present and _flat_dist(p, _stalker.global_position) < DUMMY_MONSTER_MIN:
-		return false
-	if _mode_has_seeker() and _flat_dist(p, _seeker_spawn.global_position) < DUMMY_MONSTER_MIN:
-		return false
-	return true
+# ------------------------------------------------------------- monster events
+
+func _on_player_killed(_victim: Node3D, stalker: Stalker) -> void:
+	_begin_reset(stalker.punch_duration + 0.3, "The player was killed. Press T to run again.")
 
 
-func _random_stalker_position() -> Vector3:
-	var dummy_pos := _subject.global_position
-	for i in 100:
-		var p := Vector3(randf_range(-13.0, 13.0), 0.0, randf_range(-13.0, 13.0))
-		if _flat_dist(p, dummy_pos) < RANDOM_MIN_DIST:
-			continue
-		if _min_dist_to_cubes(p) < STALKER_CLEARANCE + 0.5:
-			continue
-		return p
-	# Fallback: the corner farthest from the Dummy.
-	return Vector3(
-		13.0 if dummy_pos.x < 0.0 else -13.0,
-		0.0,
-		13.0 if dummy_pos.z < 0.0 else -13.0
+func _on_seeker_killed_holder(_source: Node3D) -> void:
+	_begin_reset(1.0, "The Seeker took the torch and the player died. Press T to run again.")
+
+
+func _on_seeker_killed_monster(monster: Node3D) -> void:
+	if monster in _monsters:
+		_monsters.erase(monster)
+		_monster_home.erase(monster.get_instance_id())
+	monster.queue_free()
+	_say("The Seeker killed a Stalker.")
+
+
+func _on_seeker_destroyed_obstacle(obstacle: Node3D) -> void:
+	_cubes.erase(obstacle)
+	_request_rebake()
+	_say("The Seeker smashed a cube (%d left)." % _cubes.size())
+
+
+func _begin_reset(delay: float, message: String) -> void:
+	if _phase != Phase.RUNNING:
+		return
+	_phase = Phase.RESETTING
+	get_tree().create_timer(delay).timeout.connect(
+		func() -> void:
+			_stop_test(message),
+		CONNECT_ONE_SHOT
 	)
 
 
 # ------------------------------------------------------------------ per frame
 
 func _process(delta: float) -> void:
+	_clamp_subject()
 	match _phase:
-		Phase.PLACE_DUMMY:
-			var p := _subject.global_position
-			p.x = clampf(p.x, -13.5, 13.5)
-			p.z = clampf(p.z, -13.5, 13.5)
-			_subject.global_position = p
-			_marker.global_position = Vector3(p.x, 0.02, p.z)
-			var ok := _dummy_spot_valid()
-			_marker_material.albedo_color = Color(0.2, 1.0, 0.3, 0.5) if ok else Color(1.0, 0.15, 0.15, 0.6)
+		Phase.PLACE_ENEMY:
+			if _enemy_ghost:
+				_move_enemy_ghost(delta)
 		Phase.PLACE_CUBE:
-			if _ghost:
-				var half := CUBE_SIZE * 0.5
-				var limit := NAV_EDGE - half
-				var step := _input_world_vector() * GHOST_SPEED * delta
-				var q := _ghost.position + step
-				q.x = clampf(q.x, -limit, limit)
-				q.z = clampf(q.z, -limit, limit)
-				q.y = half
-				_ghost.position = q
-				var ok := _ghost_spot_valid()
-				_ghost_material.albedo_color = Color(0.2, 1.0, 0.3, 0.45) if ok else Color(1.0, 0.15, 0.15, 0.55)
+			if _cube_ghost:
+				_move_cube_ghost(delta)
+	_update_ghost_marker()
 	_message_time = maxf(_message_time - delta, 0.0)
 	_update_label()
 
 
-## WASD as a world-space direction on the floor, relative to the fixed camera.
-func _input_world_vector() -> Vector3:
+## Keep the player on the floor in every phase.
+func _clamp_subject() -> void:
+	if _subject.is_in_group("dead"):
+		return
+	var p := _subject.global_position
+	p.x = clampf(p.x, -FLOOR_EDGE, FLOOR_EDGE)
+	p.z = clampf(p.z, -FLOOR_EDGE, FLOOR_EDGE)
+	_subject.global_position = p
+
+
+func _move_enemy_ghost(delta: float) -> void:
+	var input := _arrow_vector()
+	if input.length() > 0.01:
+		var step := _camera_world_vector(input) * GHOST_SPEED * delta
+		var q := _enemy_ghost.position + step
+		q.x = clampf(q.x, -NAV_EDGE, NAV_EDGE)
+		q.z = clampf(q.z, -NAV_EDGE, NAV_EDGE)
+		_enemy_ghost.position = q
+
+
+func _move_cube_ghost(delta: float) -> void:
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var step := _camera_world_vector(input) * GHOST_SPEED * delta
+	var half := CUBE_SIZE * 0.5
+	var limit := NAV_EDGE - half
+	var q := _cube_ghost.position + step
+	q.x = clampf(q.x, -limit, limit)
+	q.z = clampf(q.z, -limit, limit)
+	q.y = half
+	_cube_ghost.position = q
+
+
+func _arrow_vector() -> Vector2:
+	var v := Vector2.ZERO
+	if Input.is_physical_key_pressed(KEY_LEFT):
+		v.x -= 1.0
+	if Input.is_physical_key_pressed(KEY_RIGHT):
+		v.x += 1.0
+	if Input.is_physical_key_pressed(KEY_UP):
+		v.y -= 1.0
+	if Input.is_physical_key_pressed(KEY_DOWN):
+		v.y += 1.0
+	return v
+
+
+## A floor-space direction for an input vector, relative to the fixed camera.
+func _camera_world_vector(input: Vector2) -> Vector3:
 	var cam := get_viewport().get_camera_3d()
 	if input.length() < 0.01 or cam == null:
 		return Vector3.ZERO
@@ -551,6 +581,24 @@ func _input_world_vector() -> Vector3:
 
 # --------------------------------------------------------------------- label
 
+func _update_ghost_marker() -> void:
+	var active: MeshInstance3D = null
+	var valid := false
+	match _phase:
+		Phase.PLACE_ENEMY:
+			active = _enemy_ghost
+			valid = _enemy_spot_valid()
+		Phase.PLACE_CUBE:
+			active = _cube_ghost
+			valid = _cube_spot_valid()
+	if active == null:
+		_marker.visible = false
+		return
+	_marker.visible = true
+	_marker.global_position = Vector3(active.position.x, 0.02, active.position.z)
+	_marker_material.albedo_color = Color(0.2, 1.0, 0.3, 0.5) if valid else Color(1.0, 0.15, 0.15, 0.6)
+
+
 func _say(text: String) -> void:
 	_message = text
 	_message_time = 5.0
@@ -561,32 +609,38 @@ func _update_label() -> void:
 	var phase_name := ""
 	var help := ""
 	match _phase:
-		Phase.PLACE_DUMMY:
-			phase_name = "1. PLACE DUMMY"
-			help = "WASD move Dummy  |  E place"
-		Phase.READY:
-			phase_name = "READY"
-			help = "O add cube  |  Backspace remove last  |  P move Dummy  |  T start"
+		Phase.PREPARE:
+			phase_name = "PREPARE"
+			help = "WASD move  |  N enemy (arrows, E)  |  Tab type  |  O cube  |  T start"
+		Phase.PLACE_ENEMY:
+			phase_name = "PLACING %s" % _enemy_name().to_upper()
+			help = "Arrows move  |  E spawn  |  Tab type  |  Esc cancel"
 		Phase.PLACE_CUBE:
 			phase_name = "PLACING CUBE"
 			help = "WASD move cube  |  E place  |  Esc cancel"
 		Phase.RUNNING:
 			phase_name = "RUNNING"
-			help = "WASD aim torch  |  F light  |  T stop"
+			help = "WASD move/aim  |  Q lock-on  |  F light  |  T stop"
 		Phase.RESETTING:
 			phase_name = "RESETTING..."
 			help = ""
+
+	var monster_lines := PackedStringArray()
+	if _monsters.is_empty():
+		monster_lines.append("No enemies placed (press N).")
+	else:
+		for m in _monsters:
+			var line := "Enemy"
+			if m is Stalker:
+				line = "Stalker: " + (m as Stalker).state_name()
+			elif m is Seeker:
+				line = "Seeker: " + (m as Seeker).state_name()
+			monster_lines.append(line)
+
 	var nav_state := "baking..." if _baking else "ready"
 	var dead := " (dead)" if _subject.is_in_group("dead") else ""
-	var monster_lines := PackedStringArray()
-	if _stalker_present:
-		monster_lines.append("Stalker: " + _stalker.state_name())
-	if _seeker and is_instance_valid(_seeker):
-		monster_lines.append("Seeker: " + _seeker.state_name())
-	elif _mode_has_seeker():
-		monster_lines.append("Seeker: WAITING (press T)")
-	var text := "Mode: %s  [Tab]\n%s\nLight: %s%s  [F]\nCubes: %d   Navmesh: %s\n%s  [Esc] menu" % [
-		MonsterMode.keys()[_monster_mode],
+	var text := "Room: %s\n%s\nLight: %s%s  [F]\nCubes: %d   Navmesh: %s\n%s  [Esc] menu" % [
+		phase_name,
 		"\n".join(monster_lines),
 		"ON" if _subject.flashlight_is_on else "OFF",
 		dead,
@@ -597,4 +651,3 @@ func _update_label() -> void:
 	if _message_time > 0.0:
 		text += "\n>> " + _message
 	_debug_label.text = text
-

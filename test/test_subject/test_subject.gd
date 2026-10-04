@@ -2,8 +2,16 @@ class_name TestSubject
 extends CharacterBody3D
 ## Temporary stand-in for the player (test subject / decoy).
 ##
-##   WASD - move
-##   F    - toggle the flashlight
+##   W      - move forward
+##   S      - back away WITHOUT turning
+##   A / D  - turn left / turn right  (strafe left / right while lock-on is active)
+##   Q      - toggle lock-on: face the closest monster in group "stalker" that is
+##            in front; with no monster in range the torch just points forward
+##   F      - toggle the flashlight
+##
+## (Silent Hill 3-style controls, same scheme as the shared player in
+## controls/godot_horror/player. E is left to the test room, which uses it
+## for placing the Dummy / cubes.)
 ##
 ## This body owns the flashlight side of the light interaction: it decides
 ## whether the light actually hits the Stalker (cone + distance + occlusion)
@@ -25,8 +33,18 @@ signal flashlight_toggled(is_on: bool)
 @export_group("Movement")
 @export var move_speed := 3.2
 @export var gravity := 25.0
-## How fast the body turns toward the move direction (higher = snappier).
-@export var turn_speed := 12.0
+## How fast A / D turn the body (radians per second).
+@export var turn_speed := 4.0
+
+@export_group("Lock-on")
+## How fast the body turns to face the locked-on monster (radians per second).
+@export var lock_on_turn_speed := 4.0
+## Monsters further away than this are ignored (meters).
+@export var lock_on_range := 9.0
+## Monsters must be within this front cone to be targetable (degrees).
+@export var lock_on_cone_deg := 70.0
+## Group holding the targetable monsters.
+@export var lock_on_group := "stalker"
 
 @export_group("Flashlight")
 ## "Am I lit" test radius (meters). Does not have to match the visual light.
@@ -49,7 +67,7 @@ var flashlight_is_on := true:
 			$Light.light_energy = 0.0
 		flashlight_toggled.emit(value)
 
-## While locked the subject cannot walk, but WASD still turns it so the
+## While locked the subject cannot walk, but A/D still turn it so the
 ## flashlight can be aimed. Set by the test room when T is pressed.
 var locked := false
 ## When false the subject ignores WASD completely (used while the test room
@@ -57,7 +75,9 @@ var locked := false
 var input_enabled := true
 
 var _dead := false
+var _lock_on := false
 var _light_key_held := false
+var _q_key_held := false
 var _stalker: Stalker
 var _fall_tween: Tween
 var _spawn_position := Vector3.ZERO
@@ -81,6 +101,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_handle_light_toggle()
+	_handle_lock_on()
 	if _dead:
 		if _stalker:
 			_stalker.set_lit(false)
@@ -100,41 +121,102 @@ func set_locked(value: bool) -> void:
 		velocity = Vector3.ZERO
 
 
+## Silent Hill 3-style controls:
+##   W - forward, S - back away (never turns the body), A / D - turn in place.
+##   While lock-on is active, A / D strafe instead of turning, and the body
+##   keeps facing the nearest targetable monster.
 func _move(delta: float) -> void:
-	# Camera-relative input (fixed camera, Resident Evil style): pressing a
-	# direction turns the body toward it and walks that way. S turns around
-	# and walks toward the camera instead of back-pedalling.
-	var input := Vector2.ZERO
-	if input_enabled:
-		input = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	var move_dir := Vector3.ZERO
-	var cam := get_viewport().get_camera_3d()
-	if input.length() > 0.01 and cam:
-		var right := cam.global_transform.basis.x
-		right.y = 0.0
-		right = right.normalized()
-		var back := cam.global_transform.basis.z
-		back.y = 0.0
-		back = back.normalized()
-		move_dir = (right * input.x + back * input.y).normalized()
-	elif input.length() > 0.01:
-		move_dir = Vector3(input.x, 0.0, input.y).normalized()
+	var forward := -global_transform.basis.z
+	var right := global_transform.basis.x
 
-	if move_dir != Vector3.ZERO:
-		# Turn toward the move direction (the model's front is -Z).
-		var target_yaw := atan2(-move_dir.x, -move_dir.z)
-		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(turn_speed * delta, 0.0, 1.0))
-		if not locked:
-			velocity.x = move_dir.x * move_speed
-			velocity.z = move_dir.z * move_speed
+	var turn_input := 0.0
+	var move_input := 0.0
+	if input_enabled:
+		if Input.is_action_pressed("move_left"):
+			turn_input += 1.0
+		if Input.is_action_pressed("move_right"):
+			turn_input -= 1.0
+		if Input.is_action_pressed("move_forward"):
+			move_input += 1.0
+		if Input.is_action_pressed("move_back"):
+			move_input -= 1.0
+
+	# A / D: turn while free, strafe while lock-on is active.
+	var strafe_input := 0.0
+	if _lock_on:
+		strafe_input = -turn_input
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, move_speed * 12.0 * delta)
-		velocity.z = move_toward(velocity.z, 0.0, move_speed * 12.0 * delta)
+		rotate_y(turn_input * turn_speed * delta)
+
+	# W / S: forward / back. The test-room lock freezes walking but keeps
+	# turning, so the torch can still be aimed while in place.
 	if locked:
 		velocity.x = 0.0
 		velocity.z = 0.0
+	else:
+		var direction := forward * move_input + right * strafe_input
+		if direction.length_squared() > 1.0:
+			direction = direction.normalized()
+		velocity.x = direction.x * move_speed
+		velocity.z = direction.z * move_speed
+
 	velocity.y -= gravity * delta
 	move_and_slide()
+
+	# Lock-on: keep facing the closest targetable monster.
+	if _lock_on:
+		_face_lock_target(delta)
+
+
+## Toggles lock-on with Q. No input action exists for it yet, so the raw key
+## is polled (same pattern as _handle_light_toggle()).
+func _handle_lock_on() -> void:
+	var down := Input.is_key_pressed(KEY_Q)
+	if down and not _q_key_held:
+		_lock_on = not _lock_on
+	_q_key_held = down
+
+
+## Turns toward the closest targetable monster.
+func _face_lock_target(delta: float) -> void:
+	var target := _closest_monster_in_front()
+	if target == null:
+		return
+	var to_target: Vector3 = target.global_position - global_position
+	to_target.y = 0.0
+	if to_target.length_squared() < 0.001:
+		return
+	to_target = to_target.normalized()
+	var forward := -global_transform.basis.z
+	var angle := forward.angle_to(to_target)
+	if angle < 0.005:
+		return
+	# Positive cross.y means the target is to the left.
+	var side := forward.cross(to_target).y
+	var step := minf(lock_on_turn_speed * delta, angle)
+	rotate_y(step if side > 0.0 else -step)
+
+
+## Nearest node in [lock_on_group] that is within [lock_on_range] m and in the
+## front cone of [lock_on_cone_deg] degrees.
+func _closest_monster_in_front() -> Node3D:
+	var best: Node3D = null
+	var best_dist := INF
+	var forward := -global_transform.basis.z
+	var min_facing := cos(deg_to_rad(lock_on_cone_deg))
+	for node in get_tree().get_nodes_in_group(lock_on_group):
+		if not node is Node3D:
+			continue
+		var to_node: Vector3 = node.global_position - global_position
+		var dist := to_node.length()
+		if dist < 0.001 or dist > lock_on_range:
+			continue
+		if to_node.normalized().dot(forward) < min_facing:
+			continue
+		if dist < best_dist:
+			best_dist = dist
+			best = node
+	return best
 
 
 ## ------------------------------------------------------------------ light
@@ -210,6 +292,7 @@ func die(attacker_position: Vector3 = Vector3.INF) -> void:
 	add_to_group("dead")
 	velocity = Vector3.ZERO
 	flashlight_is_on = false
+	_lock_on = false
 	set_physics_process(false)
 
 	var body := $Body as Node3D
