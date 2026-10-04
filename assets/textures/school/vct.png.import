@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8u54wiiru3b6"
-path.s3tc="res://.godot/imported/Dummy_2.png-49af345c3f7b182d1ba034e77c82a6ff.s3tc.ctex"
+uid="uid://cv6abmuhhimyg"
+path.s3tc="res://.godot/imported/vct.png-2a3bb9b073517de9ccc5683c068ab1e3.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "bf5b85df91c75813291216eae9821056"
-}
 
 [deps]
 
-source_file="res://assets/temp/Dummy_2.png"
-dest_files=["res://.godot/imported/Dummy_2.png-49af345c3f7b182d1ba034e77c82a6ff.s3tc.ctex"]
+source_file="res://assets/textures/school/vct.png"
+dest_files=["res://.godot/imported/vct.png-2a3bb9b073517de9ccc5683c068ab1e3.s3tc.ctex"]
 
 [params]
 

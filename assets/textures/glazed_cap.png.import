@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8u54wiiru3b6"
-path.s3tc="res://.godot/imported/Dummy_2.png-49af345c3f7b182d1ba034e77c82a6ff.s3tc.ctex"
+uid="uid://cycg67d86odif"
+path.s3tc="res://.godot/imported/glazed_cap.png-c688b0fa386943258346debd939ee07e.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "bf5b85df91c75813291216eae9821056"
-}
 
 [deps]
 
-source_file="res://assets/temp/Dummy_2.png"
-dest_files=["res://.godot/imported/Dummy_2.png-49af345c3f7b182d1ba034e77c82a6ff.s3tc.ctex"]
+source_file="res://assets/textures/glazed_cap.png"
+dest_files=["res://.godot/imported/glazed_cap.png-c688b0fa386943258346debd939ee07e.s3tc.ctex"]
 
 [params]
 
