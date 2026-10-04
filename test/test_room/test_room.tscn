@@ -1,7 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3 uid="uid://ukn348nb5dy3"]
 
-[ext_resource type="Script" path="res://test/test_room/test_room.gd" id="1"]
-[ext_resource type="Script" path="res://test/test_room/nav_region.gd" id="2"]
+[ext_resource type="Script" uid="uid://brmdac50griyf" path="res://test/test_room/test_room.gd" id="1"]
+[ext_resource type="Script" uid="uid://b8njikhy0vqmd" path="res://test/test_room/nav_region.gd" id="2"]
 [ext_resource type="PackedScene" path="res://entities/monsters/stalker/stalker.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://test/test_subject/test_subject.tscn" id="4"]
 [ext_resource type="NavigationMesh" path="res://test/test_room/test_room.tres" id="5"]
@@ -17,6 +17,9 @@ fog_light_color = Color(0.12, 0.13, 0.17, 1)
 fog_light_energy = 0.4
 fog_density = 0.003
 
+[sub_resource type="BoxShape3D" id="floor_shape"]
+size = Vector3(30, 0.2, 30)
+
 [sub_resource type="StandardMaterial3D" id="floor_material"]
 albedo_color = Color(0.5, 0.48, 0.45, 1)
 roughness = 0.95
@@ -25,50 +28,50 @@ roughness = 0.95
 material = SubResource("floor_material")
 size = Vector3(30, 0.2, 30)
 
-[sub_resource type="BoxShape3D" id="floor_shape"]
-size = Vector3(30, 0.2, 30)
-
-[node name="TestRoom" type="Node3D"]
+[node name="TestRoom" type="Node3D" unique_id=1323224842]
 script = ExtResource("1")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1609193271]
 environment = SubResource("env")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=2078673027]
 transform = Transform3D(0.866025, -0.409576, 0.286788, 0, 0.573576, 0.819152, -0.5, -0.709406, 0.496732, 0, 10, 0)
 light_energy = 0.45
 shadow_enabled = true
 
-[node name="Room" type="Node3D" parent="."]
+[node name="Room" type="Node3D" parent="." unique_id=1031383104]
 
-[node name="Navigation" type="NavigationRegion3D" parent="Room"]
+[node name="Navigation" type="NavigationRegion3D" parent="Room" unique_id=188504418]
 navigation_mesh = ExtResource("5")
 script = ExtResource("2")
 
-[node name="Floor" type="StaticBody3D" parent="Room/Navigation"]
+[node name="Floor" type="StaticBody3D" parent="Room/Navigation" unique_id=2127981635]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 
-[node name="Shape" type="CollisionShape3D" parent="Room/Navigation/Floor"]
+[node name="Shape" type="CollisionShape3D" parent="Room/Navigation/Floor" unique_id=1835870144]
 shape = SubResource("floor_shape")
 
-[node name="Mesh" type="MeshInstance3D" parent="Room/Navigation/Floor"]
+[node name="Mesh" type="MeshInstance3D" parent="Room/Navigation/Floor" unique_id=1156090186]
 mesh = SubResource("floor_mesh")
 
-[node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(0.707107, -0.40558, 0.579228, 0, 0.819152, 0.573576, -0.707107, -0.40558, 0.579228, 19.6938, 19.5016, 19.6938)
-fov = 40.0
+[node name="Camera" type="Camera3D" parent="." unique_id=694740633]
+transform = Transform3D(0.7071068, -0.40557995, 0.57922786, 0, 0.8191519, 0.5735767, -0.7071068, -0.40557995, 0.57922786, 25.434385, 23.579306, 27.885136)
 current = true
+fov = 21.54345
 
-[node name="Stalker" parent="." instance=ExtResource("3")]
+[node name="Stalker" parent="." unique_id=719463318 instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
 
-[node name="TestSubject" parent="." instance=ExtResource("4")]
+[node name="TestSubject" parent="." unique_id=1956549311 instance=ExtResource("4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
 
-[node name="Debug" type="CanvasLayer" parent="."]
+[node name="SeekerSpawn" type="Marker3D" parent="." unique_id=1028432543]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
 
-[node name="DebugLabel" type="Label" parent="Debug"]
-anchors_preset = 1
+[node name="Debug" type="CanvasLayer" parent="." unique_id=534388847]
+
+[node name="DebugLabel" type="Label" parent="Debug" unique_id=1165608520]
+anchors_preset = 10
 anchor_right = 1.0
 offset_left = -700.0
 offset_top = 8.0

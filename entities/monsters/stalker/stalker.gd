@@ -58,7 +58,7 @@ enum State { IDLE, CHASING, ATTACKING, FROZEN }
 
 @export_group("Animation")
 ## Names of the animations inside the Body / Punch AnimationPlayers.
-@export var walk_anim := "Take 001"
+@export var walk_anim := "MonsterPSX_Rig|Walk_Nervous"
 @export var punch_anim := "Take 001"
 ## The model's forward axis at zero rotation (local XZ), used for aiming.
 @export var model_forward := Vector3(0, 0, 1)
@@ -89,16 +89,42 @@ var _lunge_time := 0.0
 var _spawn_transform := Transform3D.IDENTITY
 
 
+func _find_animation_player(from_node: Node) -> AnimationPlayer:
+	if from_node == null:
+		return null
+
+	var players: Array[Node] = from_node.find_children("*", "AnimationPlayer", true, false)
+	if not players.is_empty():
+		return players[0] as AnimationPlayer
+
+	return null
+
 func _ready() -> void:
 	add_to_group("stalker")
 	_spawn_transform = global_transform
 	_navigation = $Navigation
 	_model = $Model
-	_walk_player = $Model/Body/AnimationPlayer
+	_walk_player = _find_animation_player($Model/Body)
+	if _walk_player == null:
+		push_warning("Stalker: Missing AnimationPlayer on Model/Body")
+	else:
+		print("=== STALKER WALK ANIMATIONS ===")
+		for animation_name in _walk_player.get_animation_list():
+			print("  ", animation_name)
+
 	_punch_model = $Model/Punch
-	_punch_player = $Model/Punch/AnimationPlayer
+	_punch_player = _find_animation_player($Model/Punch)
+	if _punch_player == null:
+		push_warning("Stalker: Missing AnimationPlayer on Model/Punch")
+	else:
+		print("=== STALKER PUNCH ANIMATIONS ===")
+		for animation_name in _punch_player.get_animation_list():
+			print("  ", animation_name)
+	if _punch_player == null:
+		push_warning("Stalker: Missing AnimationPlayer on Model/Punch")
 	_punch_model.visible = false
-	_walk_player.animation_finished.connect(_on_walk_animation_finished)
+	if _walk_player:
+		_walk_player.animation_finished.connect(_on_walk_animation_finished)
 	_roll_lurch()
 	_roll_snap()
 
@@ -106,7 +132,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not active:
 		velocity = Vector3.ZERO
-		_walk_player.speed_scale = 0.0
+		if _walk_player:
+			_walk_player.speed_scale = 0.0
 		return
 	_ensure_player()
 	_update_illumination()
@@ -136,8 +163,10 @@ func deactivate() -> void:
 	_player = null
 	_lunge_time = 0.0
 	_punch_model.visible = false
-	_punch_player.stop()
-	_walk_player.speed_scale = 0.0
+	if _punch_player:
+		_punch_player.stop()
+	if _walk_player:
+		_walk_player.speed_scale = 0.0
 	global_transform = _spawn_transform
 	_facing = 0.0
 	_model.rotation.y = 0.0
@@ -160,10 +189,12 @@ func set_lit(value: bool) -> void:
 func _update_illumination() -> void:
 	if is_lit and state == State.CHASING:
 		state = State.FROZEN
-		_walk_player.speed_scale = 0.0
+		if _walk_player:
+			_walk_player.speed_scale = 0.0
 	elif not is_lit and state == State.FROZEN:
 		state = State.CHASING
-		_walk_player.speed_scale = 1.0
+		if _walk_player:
+			_walk_player.speed_scale = 1.0
 		_roll_lurch()
 		_roll_snap()
 
@@ -203,7 +234,8 @@ func _update_chasing(delta: float) -> void:
 	if _player == null:
 		state = State.IDLE
 		velocity = Vector3.ZERO
-		_walk_player.speed_scale = 0.0
+		if _walk_player:
+			_walk_player.speed_scale = 0.0
 		return
 
 	if state == State.IDLE:
@@ -223,7 +255,8 @@ func _update_chasing(delta: float) -> void:
 
 func _enter_attacking() -> void:
 	state = State.ATTACKING
-	_walk_player.speed_scale = 0.0
+	if _walk_player:
+		_walk_player.speed_scale = 0.0
 	_lunge_time = lunge_duration
 	if _player:
 		var to_player: Vector3 = _player.global_position - global_position
@@ -259,18 +292,24 @@ func _strike() -> void:
 	var victim := _player
 	if victim:
 		if victim.has_method("die"):
-			victim.die()
+			victim.die(global_position)
 		player_killed.emit(victim)
 	_player = null
 
 
 func _play_punch() -> void:
 	_punch_model.visible = true
-	_punch_player.play(punch_anim)
+	if _punch_player:
+		var animation_name := StringName(punch_anim)
+		if _punch_player.has_animation(animation_name):
+			_punch_player.play(animation_name)
+		else:
+			push_warning("Stalker: Punch animation '%s' not found." % punch_anim)
 	get_tree().create_timer(punch_duration).timeout.connect(
 		func() -> void:
 			_punch_model.visible = false
-			_punch_player.stop(),
+			if _punch_player:
+				_punch_player.stop(),
 		CONNECT_ONE_SHOT
 	)
 
@@ -369,12 +408,30 @@ func _yaw_to(direction: Vector3) -> float:
 # --------------------------------------------------------------- animation
 
 func _sync_walk_animation() -> void:
-	if not _walk_player.is_playing() or _walk_player.current_animation != walk_anim:
-		_walk_player.play(walk_anim)
-	_walk_player.speed_scale = clampf(_lurch_speed / maxf(walk_reference_speed, 0.1), 0.25, 2.5)
+	if _walk_player == null:
+		return
+
+	var animation_name := StringName(walk_anim)
+
+	if not _walk_player.has_animation(animation_name):
+		push_warning(
+			"Stalker: Walk animation '%s' is not present in Body AnimationPlayer."
+			% walk_anim
+		)
+		return
+
+	if not _walk_player.is_playing() or _walk_player.current_animation != animation_name:
+		_walk_player.play(animation_name)
+
+	_walk_player.speed_scale = clampf(
+		_lurch_speed / maxf(walk_reference_speed, 0.1),
+		0.25,
+		2.5
+	)
 
 
 func _on_walk_animation_finished(_animation: StringName) -> void:
 	# Keep the walk cycle going while chasing; otherwise leave it still.
 	if state == State.CHASING:
-		_walk_player.play(walk_anim)
+		if _walk_player:
+			_walk_player.play(walk_anim)

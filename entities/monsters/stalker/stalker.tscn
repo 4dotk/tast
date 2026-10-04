@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://entities/monsters/stalker/stalker.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://b8b547lmwkbet" path="res://assets/temp/Mannequin.fbx" id="2"]
+[ext_resource type="PackedScene" path="res://assets/models/stalker/Stalker.fbx" id="2"]
 [ext_resource type="PackedScene" path="res://assets/temp/Dummy.fbx" id="3"]
 
 [sub_resource type="CapsuleShape3D" id="stalker_capsule"]

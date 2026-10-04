@@ -14,6 +14,8 @@ extends CharacterBody3D
 ##   - it stays in group "player" (the Stalker chases it)
 ##   - it stays out of group "dead" until it dies
 ##   - it implements die()
+##   - it stays in group "light_source" and implements is_light_on() / is_held()
+##     (the Seeker is attracted to light sources and attacks them)
 
 signal died
 ## Emitted once when the subject is killed.
@@ -65,6 +67,7 @@ var _body_albedo := Color.WHITE
 
 func _ready() -> void:
 	add_to_group("player")
+	add_to_group("light_source")
 	_spawn_position = global_position
 	# Slight downward tilt; the light is a child, so it follows the body's facing.
 	$Light.rotation.x = deg_to_rad(-10.0)
@@ -136,6 +139,16 @@ func _move(delta: float) -> void:
 
 ## ------------------------------------------------------------------ light
 
+## Light source contract (used by the Seeker).
+func is_light_on() -> bool:
+	return flashlight_is_on and not _dead
+
+
+## The torch is always carried by this body.
+func is_held() -> bool:
+	return true
+
+
 func _handle_light_toggle() -> void:
 	var down := Input.is_action_pressed("toggle_light")
 	if down and not _light_key_held:
@@ -188,36 +201,78 @@ func _is_occluded(from: Vector3, to: Vector3) -> bool:
 
 ## --------------------------------------------------------------------- death
 
-func die() -> void:
+func die(attacker_position: Vector3 = Vector3.INF) -> void:
 	if _dead:
 		return
+
 	_dead = true
 	died.emit()
 	add_to_group("dead")
 	velocity = Vector3.ZERO
 	flashlight_is_on = false
-	# Fall face-first like a dropped prop.
+	set_physics_process(false)
+
+	var body := $Body as Node3D
+
+	# The body falls AWAY from the attacker.
+	# Example: attacker hits from behind -> Dummy falls forward.
+	var away := global_position - attacker_position
+	away.y = 0.0
+
+	if attacker_position == Vector3.INF or away.length_squared() < 0.001:
+		# No hit direction supplied: fall forward according to the subject's facing.
+		away = -global_transform.basis.z
+		away.y = 0.0
+
+	away = away.normalized()
+
+	# Convert the world-space hit direction into the subject's local space.
+	var local_away := global_transform.basis.inverse() * away
+	local_away.y = 0.0
+	local_away = local_away.normalized()
+
+	# Local -Z is forward. Tilt the visible body around the horizontal axis
+	# pointing across the fall direction.
+	var fall_angle := PI * 0.5
+	var fall_axis := Vector3(local_away.z, 0.0, -local_away.x).normalized()
+
+	# Rotate the model around the correct horizontal axis. This means the
+	# corpse always falls away from whoever hit it.
+	var target_rotation := body.rotation
+	target_rotation.x = fall_axis.x * fall_angle
+	target_rotation.z = fall_axis.z * fall_angle
+
 	_fall_tween = create_tween()
-	_fall_tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	_fall_tween.parallel().tween_property(self, "rotation:x", -PI * 0.5, 0.4)
-	if _body_material:
-		var faded := Color(_body_albedo.r, _body_albedo.g, _body_albedo.b, 0.0)
-		_fall_tween.parallel().tween_property(_body_material, "albedo_color", faded, 0.4)
-	# Respawn after a short delay so the behaviour can be watched again.
+	_fall_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_fall_tween.parallel().tween_property(body, "rotation:x", target_rotation.x, 0.32)
+	_fall_tween.parallel().tween_property(body, "rotation:z", target_rotation.z, 0.32)
+	_fall_tween.parallel().tween_property(
+		body,
+		"position:y",
+		body.position.y - 0.45,
+		0.32
+	)
+
+	# Stay down long enough for the death pose to be visible.
 	get_tree().create_timer(2.5).timeout.connect(_respawn, CONNECT_ONE_SHOT)
 
 
 func _respawn() -> void:
 	if not _dead:
 		return
+
 	if _fall_tween and _fall_tween.is_valid():
 		_fall_tween.kill()
+
+	var body := $Body as Node3D
+	body.rotation = Vector3.ZERO
+	body.position = Vector3.ZERO
+
 	_dead = false
 	remove_from_group("dead")
 	rotation = Vector3.ZERO
 	global_position = _spawn_position
 	velocity = Vector3.ZERO
-	if _body_material:
-		_body_material.albedo_color = _body_albedo
 	flashlight_is_on = true
+	set_physics_process(true)
 	print("Test subject respawned at ", _spawn_position)
