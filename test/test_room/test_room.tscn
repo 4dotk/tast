@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://brmdac50griyf" path="res://test/test_room/test_room.gd" id="1"]
 [ext_resource type="Script" uid="uid://b8njikhy0vqmd" path="res://test/test_room/nav_region.gd" id="2"]
-[ext_resource type="PackedScene" path="res://test/test_subject/test_subject.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://x018bbdnkwvq" path="res://entities/player/player.tscn" id="4"]
 [ext_resource type="NavigationMesh" path="res://test/test_room/test_room.tres" id="5"]
 
 [sub_resource type="Environment" id="env"]
@@ -54,12 +54,12 @@ shape = SubResource("floor_shape")
 mesh = SubResource("floor_mesh")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=694740633]
-transform = Transform3D(0.7071068, -0.40557995, 0.57922786, 0, 0.8191519, 0.5735767, -0.7071068, -0.40557995, 0.57922786, 25.434385, 23.579306, 27.885136)
+transform = Transform3D(0.7071068, -0.40557995, 0.57922786, 0, 0.8191519, 0.5735767, -0.7071068, -0.40557995, 0.57922786, 14.068916, 13.675152, 17.2883)
 current = true
 fov = 21.54345
 
-[node name="TestSubject" parent="." unique_id=1956549311 instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+[node name="Player" parent="." unique_id=1956549311 instance=ExtResource("4")]
+transform = Transform3D(0.70710665, 0, -0.7071069, 0, 1, 0, 0.7071069, 0, 0.70710665, -4, -5.9604645e-08, 3.9999998)
 
 [node name="Debug" type="CanvasLayer" parent="." unique_id=534388847]
 

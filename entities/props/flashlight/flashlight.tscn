@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c07jr2acna6yg"]
+
+[ext_resource type="PackedScene" uid="uid://ymghvu53e0we" path="res://assets/models/props/flashlight.glb" id="1_model"]
+[ext_resource type="Script" uid="uid://bkabjsf8beokp" path="res://entities/props/flashlight/flashlight.gd" id="2_script"]
+
+[node name="Flashlight" type="Node3D" unique_id=1076025218]
+script = ExtResource("2_script")
+
+[node name="Model" parent="." unique_id=1138267201 instance=ExtResource("1_model")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, 0)
+
+[node name="TorchLight" type="SpotLight3D" parent="." unique_id=1752030603]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 0)
+light_color = Color(0.99855965, 0.95635015, 0.7593286, 1)
+light_energy = 12.0
+shadow_enabled = true
+spot_range = 14.0
+spot_angle = 30.0
+spot_angle_attenuation = 1.5

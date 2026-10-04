@@ -8,8 +8,9 @@ extends Node3D
 ## Workflow
 ##   1. PREPARE   N places an enemy: a ghost appears, the arrow keys move it,
 ##                E spawns it (you keep placing more), Tab switches the type
-##                (Stalker / Seeker), Esc cancels. O adds an obstacle cube
-##                (WASD moves it, E places it), Backspace removes the last cube.
+##                (Stalker / Seeker), Esc cancels. O places obstacle cubes the
+##                same way (arrows move the ghost, E places, Esc when done),
+##                Backspace removes the last cube.
 ##   2. T        Start the test: every placed enemy activates and goes after
 ##               the player.
 ##   3. T again  Stop: enemies are deactivated and returned to where you
@@ -37,11 +38,14 @@ const MONSTER_CLEARANCE := 1.0
 const DUMMY_MONSTER_MIN := 2.5
 ## Two monsters keep this center-to-center distance.
 const MONSTER_GAP := 2.0
+## How long (seconds) after the player dies before the test is reset.
+## Keep it a little shorter than the Player's respawn_delay.
+const DEATH_RESET_DELAY := 2.0
 ## Ghost speed while placing (m/s).
 const GHOST_SPEED := 7.0
 
 @onready var _debug_label: Label = $Debug/DebugLabel
-@onready var _subject: TestSubject = $TestSubject
+@onready var _subject: Player = $Player
 @onready var _nav: TestRoomNav = $Room/Navigation
 
 var _phase := Phase.PREPARE
@@ -68,7 +72,8 @@ func _ready() -> void:
 	_ensure_input_actions()
 	_build_materials()
 	_build_ghosts()
-	print("Player vs monsters room.  WASD move | N enemy (arrows, E) | O cube | Tab type | T start | Esc menu")
+	_nav.rebake_finished.connect(_on_rebake_finished)
+	print("Player vs monsters room.  WASD move | N enemy (arrows, E) | O cube (arrows, E) | Tab type | T start | Esc menu")
 
 
 # ------------------------------------------------------------------- setup
@@ -238,7 +243,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
-	if event.is_action_pressed(&"test_back_to_menu") and not event.is_echo():
+	if key != null and key.pressed and not key.echo and key.physical_keycode == KEY_ESCAPE:
 		if _phase == Phase.PLACE_ENEMY:
 			_cancel_enemy_ghost()
 		elif _phase == Phase.PLACE_CUBE:
@@ -283,7 +288,7 @@ func _on_add_cube_key() -> void:
 		Phase.PREPARE:
 			_begin_cube_ghost()
 		Phase.PLACE_CUBE:
-			_say("Already placing a cube: E to place, Esc to cancel.")
+			_say("Already placing a cube: E to place, Esc when done.")
 		Phase.PLACE_ENEMY:
 			_say("Finish the enemy first (E / Esc).")
 		Phase.RUNNING, Phase.RESETTING:
@@ -344,7 +349,7 @@ func _confirm_enemy_place() -> void:
 	var pos := Vector3(_enemy_ghost.position.x, 0.0, _enemy_ghost.position.z)
 	_spawn_enemy_at(pos)
 	_last_enemy_pos = pos
-	_say("Placed a %s. E places more, T starts the test." % _enemy_name())
+	_say("Placed a %s. E places more, Esc when done, then T starts the test." % _enemy_name())
 
 
 # ------------------------------------------------------------------- cubes
@@ -353,7 +358,7 @@ func _begin_cube_ghost() -> void:
 	_cube_ghost.visible = true
 	_cube_ghost.position = Vector3(_last_cube_pos.x, CUBE_SIZE * 0.5, _last_cube_pos.z)
 	_phase = Phase.PLACE_CUBE
-	_say("Cube ghost spawned in the middle of the floor. WASD move, E place.")
+	_say("Placing a cube. Arrows move, E place, Esc when done.")
 
 
 func _confirm_cube_place() -> void:
@@ -366,7 +371,6 @@ func _confirm_cube_place() -> void:
 func _place_cube() -> void:
 	var pos := _cube_ghost.position
 	_last_cube_pos = pos
-	_cube_ghost.visible = false
 	var body := StaticBody3D.new()
 	body.add_to_group("obstacle")
 	var shape := CollisionShape3D.new()
@@ -383,9 +387,8 @@ func _place_cube() -> void:
 	_nav.add_child(body)
 	body.global_position = pos
 	_cubes.append(body)
-	_phase = Phase.PREPARE
 	_request_rebake()
-	_say("Cube placed (%d total)." % _cubes.size())
+	_say("Cube placed (%d total). E places more, Esc when done." % _cubes.size())
 
 
 func _remove_last_cube() -> void:
@@ -471,12 +474,12 @@ func _cube_spot_valid() -> bool:
 
 # ------------------------------------------------------------- monster events
 
-func _on_player_killed(_victim: Node3D, stalker: Stalker) -> void:
-	_begin_reset(stalker.punch_duration + 0.3, "The player was killed. Press T to run again.")
+func _on_player_killed(_victim: Node3D, _stalker: Stalker) -> void:
+	_begin_reset(DEATH_RESET_DELAY, "The player was killed. Press T to run again.")
 
 
 func _on_seeker_killed_holder(_source: Node3D) -> void:
-	_begin_reset(1.0, "The Seeker took the torch and the player died. Press T to run again.")
+	_begin_reset(DEATH_RESET_DELAY, "The Seeker took the torch and the player died. Press T to run again.")
 
 
 func _on_seeker_killed_monster(monster: Node3D) -> void:
@@ -508,6 +511,11 @@ func _begin_reset(delay: float, message: String) -> void:
 
 func _process(delta: float) -> void:
 	_clamp_subject()
+	# While placing, E / Q / F belong to the placement, not the Player (E would
+	# otherwise also drop the flashlight).
+	_subject.set_process_unhandled_input(
+		_phase != Phase.PLACE_ENEMY and _phase != Phase.PLACE_CUBE
+	)
 	match _phase:
 		Phase.PLACE_ENEMY:
 			if _enemy_ghost:
@@ -524,7 +532,7 @@ func _process(delta: float) -> void:
 func _clamp_subject() -> void:
 	if _subject.is_in_group("dead"):
 		return
-	var p := _subject.global_position
+	var p: Vector3 = _subject.global_position
 	p.x = clampf(p.x, -FLOOR_EDGE, FLOOR_EDGE)
 	p.z = clampf(p.z, -FLOOR_EDGE, FLOOR_EDGE)
 	_subject.global_position = p
@@ -541,7 +549,7 @@ func _move_enemy_ghost(delta: float) -> void:
 
 
 func _move_cube_ghost(delta: float) -> void:
-	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var input := _arrow_vector()
 	var step := _camera_world_vector(input) * GHOST_SPEED * delta
 	var half := CUBE_SIZE * 0.5
 	var limit := NAV_EDGE - half
@@ -611,13 +619,13 @@ func _update_label() -> void:
 	match _phase:
 		Phase.PREPARE:
 			phase_name = "PREPARE"
-			help = "WASD move  |  N enemy (arrows, E)  |  Tab type  |  O cube  |  T start"
+			help = "WASD move  |  N enemy  |  O cube  |  Tab type  |  T start"
 		Phase.PLACE_ENEMY:
 			phase_name = "PLACING %s" % _enemy_name().to_upper()
 			help = "Arrows move  |  E spawn  |  Tab type  |  Esc cancel"
 		Phase.PLACE_CUBE:
 			phase_name = "PLACING CUBE"
-			help = "WASD move cube  |  E place  |  Esc cancel"
+			help = "Arrows move  |  E place  |  Esc done"
 		Phase.RUNNING:
 			phase_name = "RUNNING"
 			help = "WASD move/aim  |  Q lock-on  |  F light  |  T stop"
@@ -642,7 +650,7 @@ func _update_label() -> void:
 	var text := "Room: %s\n%s\nLight: %s%s  [F]\nCubes: %d   Navmesh: %s\n%s  [Esc] menu" % [
 		phase_name,
 		"\n".join(monster_lines),
-		"ON" if _subject.flashlight_is_on else "OFF",
+		"ON" if _subject.is_flashlight_on() else "OFF",
 		dead,
 		_cubes.size(),
 		nav_state,

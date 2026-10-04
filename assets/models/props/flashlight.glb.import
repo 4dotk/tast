@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c46if6plfhih7"
-path="res://.godot/imported/wall_window_class.glb-3e807d27d55f4d776a6557bf5b7a90d2.scn"
+uid="uid://ymghvu53e0we"
+path="res://.godot/imported/flashlight.glb-6c45e3799c5788ea1e5611260221d4a6.scn"
 
 [deps]
 
-source_file="res://assets/models/school/wall_window_class.glb"
-dest_files=["res://.godot/imported/wall_window_class.glb-3e807d27d55f4d776a6557bf5b7a90d2.scn"]
+source_file="res://assets/models/props/flashlight.glb"
+dest_files=["res://.godot/imported/flashlight.glb-6c45e3799c5788ea1e5611260221d4a6.scn"]
 
 [params]
 
@@ -42,4 +42,4 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=0
+gltf/texture_map_mode=1

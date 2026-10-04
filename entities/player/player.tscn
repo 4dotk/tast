@@ -1,48 +1,24 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://x018bbdnkwvq"]
 
-[ext_resource type="Script" path="res://player/player.gd" id="1_script"]
-
-[sub_resource type="StandardMaterial3D" id="mat_body"]
-albedo_color = Color(0.28, 0.25, 0.3, 1)
-roughness = 0.9
-
-[sub_resource type="CapsuleMesh" id="mesh_body"]
-material = SubResource("mat_body")
-radius = 0.4
-height = 1.8
+[ext_resource type="Script" uid="uid://cx4d63o7r36cg" path="res://entities/player/player.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://3hoy4xhsivnk" path="res://assets/temp/Dummy.fbx" id="2_dummy"]
+[ext_resource type="PackedScene" uid="uid://c07jr2acna6yg" path="res://entities/props/flashlight/flashlight.tscn" id="3_flashlight"]
 
 [sub_resource type="CapsuleShape3D" id="shape_body"]
 radius = 0.4
 height = 1.8
 
-[sub_resource type="StandardMaterial3D" id="mat_torch"]
-albedo_color = Color(0.45, 0.42, 0.38, 1)
-metallic = 0.6
-roughness = 0.4
-
-[sub_resource type="BoxMesh" id="mesh_torch"]
-material = SubResource("mat_torch")
-size = Vector3(0.09, 0.09, 0.3)
-
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=1775233132]
 script = ExtResource("1_script")
 
-[node name="Body" type="MeshInstance3D" parent="."]
-mesh = SubResource("mesh_body")
+[node name="Body" parent="." unique_id=1158552046 instance=ExtResource("2_dummy")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2071575492]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("shape_body")
 
-[node name="Torch" type="Node3D" parent="."]
-position = Vector3(0.5, 0.12, -0.5)
+[node name="FlashlightSocket" type="Node3D" parent="." unique_id=855547446]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 0.45, 0.95, -0.45)
 
-[node name="TorchLight" type="SpotLight3D" parent="Torch"]
-light_color = Color(1, 0.94, 0.8, 1)
-light_energy = 4.0
-spot_range = 12.0
-spot_angle = 32.0
-shadow_enabled = true
-
-[node name="TorchMesh" type="MeshInstance3D" parent="Torch"]
-position = Vector3(0, 0, 0.15)
-mesh = SubResource("mesh_torch")
+[node name="Flashlight" parent="FlashlightSocket" unique_id=589266857 instance=ExtResource("3_flashlight")]

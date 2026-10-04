@@ -50,6 +50,10 @@ enum State { IDLE, APPROACH, SEARCH, RETURN, DONE }
 @export var gravity := 25.0
 ## Distance (meters, on the floor plane) at which it attacks a light source.
 @export var reach_distance := 1.0
+## Same, but measured to the HOLDER's centre when the source is carried. The
+## holder's body keeps the Seeker about 0.75 m away, and the torch is held off
+## to one side, so measuring to the torch alone fails from the far side.
+@export var holder_reach_distance := 1.4
 ## How long it stands still after losing the light (seconds).
 @export var search_time := 3.0
 ## How close to the tether counts as "home" (meters).
@@ -106,6 +110,7 @@ const IGNORE_MOVE_DISTANCE := 1.5
 
 
 func _ready() -> void:
+	add_to_group("enemies")
 	_navigation = $Navigation
 	_model = $Model
 	_area = $Area
@@ -192,7 +197,7 @@ func _update_approach(delta: float) -> void:
 			_target = best
 			_repath_timer = repath_interval
 	var target_pos := _target.global_position
-	if _flat_distance(target_pos) <= reach_distance:
+	if _in_reach_of(_target):
 		_attack_source(_target)
 		return
 	_refresh_path(delta, target_pos)
@@ -270,6 +275,18 @@ func _attack_source(source: Node3D) -> void:
 		source.destroy()
 	_target = null
 	_enter(State.SEARCH)
+
+
+## Close enough to attack? A carried light also counts when the Seeker is
+## close to the person carrying it.
+func _in_reach_of(source: Node3D) -> bool:
+	if _flat_distance(source.global_position) <= reach_distance:
+		return true
+	if source.has_method("is_held") and source.is_held():
+		var holder := _find_holder(source) as Node3D
+		if holder != null and _flat_distance(holder.global_position) <= holder_reach_distance:
+			return true
+	return false
 
 
 func _find_holder(source: Node) -> Node:

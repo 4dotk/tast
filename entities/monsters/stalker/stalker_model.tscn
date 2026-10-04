@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cqmht88ddewyg"]
+
+[ext_resource type="PackedScene" uid="uid://brhqxkw1xrsvi" path="res://assets/models/stalker/Stalker.fbx" id="1_05l1c"]
+[ext_resource type="Texture2D" uid="uid://diufclv3ab3mh" path="res://assets/models/stalker/Stalker_Diffuse.png" id="2_fsvgg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tc77y"]
+albedo_texture = ExtResource("2_fsvgg")
+
+[node name="Stalker" unique_id=2139264378 instance=ExtResource("1_05l1c")]
+
+[node name="Skeleton3D" parent="MonsterPSX_Rig" parent_id_path=PackedInt32Array(1774232134) index="0" unique_id=1238044319]
+bones/0/rotation = Quaternion(-0.00035539095, -0.00014608211, 0.99999994, 0.00019276093)
+bones/1/position = Vector3(0.00043616118, -0.00016599987, 0.008763369)
+bones/1/rotation = Quaternion(-0.0068688784, 0.7657211, 0.64243, 0.030132782)
+bones/2/rotation = Quaternion(0.012494166, -0.05134618, -0.05494217, 0.9970902)
+bones/3/rotation = Quaternion(-0.04688878, 0.03919008, 0.03809152, 0.99740404)
+bones/4/rotation = Quaternion(0.026067266, -0.034794983, -0.043103114, 0.9981243)
+bones/5/rotation = Quaternion(0.31798154, 0.04425232, 0.06559921, 0.94478905)
+bones/6/rotation = Quaternion(-0.037867244, -0.1444811, -0.11889177, 0.9816089)
+bones/8/position = Vector3(-2.915841e-06, 0.0015719369, -1.2213367e-05)
+bones/8/rotation = Quaternion(-0.33540413, -0.43030816, -0.45833895, 0.7016155)
+bones/9/rotation = Quaternion(-0.47439995, -0.28847542, 0.20993513, 0.8047696)
+bones/10/rotation = Quaternion(-0.6564295, 3.394989e-08, -1.3086138e-07, 0.7543874)
+bones/11/rotation = Quaternion(-0.0063954536, -0.6742801, -0.0011097398, 0.7384472)
+bones/13/rotation = Quaternion(-0.21993075, 0.3218027, 0.3588552, 0.84811354)
+bones/14/rotation = Quaternion(-0.5967467, 0.37709457, 0.33348534, 0.62488455)
+bones/15/rotation = Quaternion(-0.5568927, -1.6258635e-08, -4.457111e-08, 0.83058447)
+bones/16/rotation = Quaternion(-0.04328194, 0.85449046, -0.03826339, 0.51624495)
+bones/18/rotation = Quaternion(-0.13331121, 0.19367003, 0.95314986, -0.19033009)
+bones/19/rotation = Quaternion(-0.34700245, -3.8727983e-08, 3.376285e-08, 0.9378643)
+bones/20/rotation = Quaternion(0.09868964, 0.85946965, 0.4656555, 0.18637939)
+bones/21/rotation = Quaternion(-0.38211945, -0.22600004, 0.10595003, 0.8897659)
+bones/23/rotation = Quaternion(0.18471155, 0.24888918, 0.949268, -0.05316148)
+bones/24/rotation = Quaternion(-0.32433867, -2.4613682e-09, -6.1534133e-09, 0.9459411)
+bones/25/rotation = Quaternion(-0.10134758, 0.88474166, 0.4180647, -0.17939584)
+bones/26/rotation = Quaternion(-0.45556748, 0.36959097, -0.30427587, 0.75051796)
+bones/28/rotation = Quaternion(0.92131805, -0.2550823, -0.24314062, 0.16428241)
+bones/30/rotation = Quaternion(-0.0009637204, 0.0038619188, 0.0023382157, 0.99998933)
+bones/32/rotation = Quaternion(0.9451133, 0.21690859, 0.20505, 0.13291341)
+bones/34/rotation = Quaternion(0.0048090927, -0.0026780702, -0.0017718306, 0.9999834)
+bones/36/rotation = Quaternion(3.3404035e-08, 0.868077, -0.49642962, 1.3429144e-07)
+bones/40/rotation = Quaternion(-3.8625374e-09, 0.855194, -0.51233464, -0.07846478)
+
+[node name="MonsterPSX" parent="MonsterPSX_Rig/Skeleton3D" index="0" unique_id=512194614]
+surface_material_override/0 = SubResource("StandardMaterial3D_tc77y")

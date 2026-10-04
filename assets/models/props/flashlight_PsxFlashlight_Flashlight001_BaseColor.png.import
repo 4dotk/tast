@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://diufclv3ab3mh"
-path.s3tc="res://.godot/imported/Stalker_Diffuse.png-7fff8b4b3f8974ee3fad8706dfca8678.s3tc.ctex"
+uid="uid://dkurt8qtesuc5"
+path.s3tc="res://.godot/imported/flashlight_PsxFlashlight_Flashlight001_BaseColor.png-0f18a4a97014a75c82326f3fee431328.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "8f2b7de7d73c8049ab4e7c120b6c70ba"
+}
 
 [deps]
 
-source_file="res://assets/models/stalker/Stalker_Diffuse.png"
-dest_files=["res://.godot/imported/Stalker_Diffuse.png-7fff8b4b3f8974ee3fad8706dfca8678.s3tc.ctex"]
+source_file="res://assets/models/props/flashlight_PsxFlashlight_Flashlight001_BaseColor.png"
+dest_files=["res://.godot/imported/flashlight_PsxFlashlight_Flashlight001_BaseColor.png-0f18a4a97014a75c82326f3fee431328.s3tc.ctex"]
 
 [params]
 
