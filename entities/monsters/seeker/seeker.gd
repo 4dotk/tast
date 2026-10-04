@@ -3,82 +3,79 @@ extends CharacterBody3D
 ## The Seeker - attracted to light sources, attacks them, and smashes through
 ## obstacle cubes and stalkers that get in its way.
 ##
-## It never targets the player. If the source it attacks is held, the holder
-## dies as a consequence.
+## The Seeker uses the seeker_model.tscn scene (Seeker.glb + the textured
+## material override). Its AnimationPlayer is found inside that model and uses
+## these animation names:
+##   Seeker_Look
+##   Seeker_Run
+##   Seeker_Attack
 ##
-## Expected scene structure (see seeker.tscn):
-##   Seeker (CharacterBody3D)
-##   ├── Collision   (CollisionShape3D)
-##   ├── Navigation  (NavigationAgent3D)
-##   ├── Model       (Node3D)
-##   │   └── Body    (Mannequin)
-##   └── Area        (Area3D, slightly bigger than the body: contact detection)
-##
-## Light source contract (duck-typed, see TestSubject):
-##   - node is in group "light_source"
-##   - is_light_on() -> bool
-##   - is_held() -> bool
-##   - optional destroy()
+## It never targets the player directly. If the light source it attacks is
+## held, the holder dies as a consequence.
 
 signal attacked_source(source: Node3D)
 signal killed_holder(source: Node3D)
 signal killed_monster(monster: Node3D)
 signal destroyed_obstacle(obstacle: Node3D)
 
-enum State { IDLE, APPROACH, SEARCH, RETURN, DONE }
+enum State { IDLE, APPROACH, SEARCH, RETURN, ATTACK, DONE }
 
 @export_group("Tether")
-## Optional marker the Seeker returns to. Empty = where it stood at _ready()
-## (or where place_at() put it).
 @export var tether: NodePath
 
 @export_group("Light")
-## Lights further away than this (meters) are ignored.
 @export var attraction_radius := 16.0
-## If true, walls between the Seeker and a light hide that light from it.
-## Obstacle cubes and stalkers never block the view, since the Seeker can
-## get through them.
 @export var require_line_of_sight := true
-## Collision layers that block sight (room geometry).
 @export_flags_3d_physics var occluder_mask := 1
-## How often (seconds) to look for lights while not chasing one.
 @export var light_check_interval := 0.25
+## When the light being chased goes off, keep heading to where it was for
+## this long (seconds) before giving up and searching.
+@export var light_off_delay := 0.5
 
 @export_group("Movement")
-@export var approach_speed := 3.0
-@export var return_speed := 2.0
+@export var approach_speed := 4.0
+@export var return_speed := 3.0
 @export var gravity := 25.0
-## Distance (meters, on the floor plane) at which it attacks a light source.
 @export var reach_distance := 1.0
-## Same, but measured to the HOLDER's centre when the source is carried. The
-## holder's body keeps the Seeker about 0.75 m away, and the torch is held off
-## to one side, so measuring to the torch alone fails from the far side.
 @export var holder_reach_distance := 1.4
-## How long it stands still after losing the light (seconds).
 @export var search_time := 3.0
-## How close to the tether counts as "home" (meters).
 @export var tether_tolerance := 0.5
-## How often the path is refreshed (seconds).
 @export var repath_interval := 0.25
-## Higher = snappier turning.
 @export var turn_speed := 10.0
-## The model's forward axis at zero rotation (local XZ), used for aiming.
 @export var model_forward := Vector3(0, 0, 1)
 
 @export_group("Strength")
-## Group of things it destroys on contact (obstacle cubes).
 @export var obstacle_group: StringName = &"obstacle"
-## Group of monsters it kills on contact (the Stalker).
 @export var prey_group: StringName = &"stalker"
-## The navmesh routes around obstacle cubes. With this on, when a cube or
-## prey is the first thing between the Seeker and its destination it walks
-## straight at it instead, and smashes it.
 @export var plow_through_obstacles := true
-## Only look this far ahead for things to plow through (meters).
 @export var plow_probe_distance := 8.0
 
-@export_group("Debug")
-@export var show_debug_label := false
+@export_group("Animation")
+@export var look_animation: StringName = &"Seeker_Look"
+@export var run_animation: StringName = &"Seeker_Run"
+@export var attack_animation: StringName = &"Seeker_Attack"
+## Cross-fade between clips (seconds) so they do not snap.
+@export var blend_time := 0.15
+## Playback speed of each clip. The look clip is played faster while the
+## Seeker is SEARCHING than while it is idling.
+@export var idle_look_speed := 1.0
+@export var search_look_speed := 1.8
+@export var run_speed_scale := 0.5
+@export var attack_speed_scale := 1.0
+## The run clip moves the model forward and snaps it back every loop. Since
+## the body is moved by the CharacterBody3D, flatten that horizontal travel on
+## the root tracks so the model stays in place and only the legs animate.
+@export var strip_root_motion := true
+## Root tracks that travel less than this (meters) are left alone.
+@export var root_motion_threshold := 0.01
+## Match the run clip's playback speed to how fast the Seeker really moves, so
+## the feet keep up with the ground. The clip's natural speed is measured from
+## the root motion that was removed; if none is found, run_reference_speed
+## (m/s the clip looks right at) is used instead.
+@export var sync_run_to_movement := true
+@export var run_reference_speed := 3.0
+## Print which clip is chosen whenever the animation changes.
+@export var debug_animations := true
 
 var active := false
 
@@ -86,26 +83,32 @@ var _state: State = State.IDLE
 var _state_time := 0.0
 var _tether_position := Vector3.ZERO
 var _target: Node3D = null
+var _attack_target: Node3D = null
 var _light_timer := 0.0
 var _repath_timer := 0.0
 var _since_repath := 0.0
 var _plowing := false
 var _handled_ids := {}
-## A light the navmesh cannot get it to. It is ignored until that light is
-## switched off or moves, so the Seeker goes home instead of flipping between
-## approaching and searching.
 var _ignored_light: Node3D = null
 var _ignored_pos := Vector3.ZERO
 var _navigation: NavigationAgent3D
 var _model: Node3D
 var _area: Area3D
-var _debug_label: Label3D
+var _animation_player: AnimationPlayer
+var _resolved_clips := {}
+## True on frames where the Seeker is actually trying to walk somewhere.
+var _moving := false
+var _attack_duration := 0.0
+var _light_off_time := 0.0
+var _move_speed := 3.0
+## clip name -> meters of forward travel per loop that was removed.
+var _clip_travel := {}
+## Animation resource id -> removed travel (the clips are shared between Seekers).
+static var _stripped := {}
+var _last_target_pos := Vector3.ZERO
 
-## A fresh path needs a moment before "navigation finished" means anything.
 const PATH_SETTLE_TIME := 0.2
-## Within this distance of the tether (meters) the Seeker walks straight home.
 const HOME_STRETCH := 1.5
-## An unreachable light that moves further than this (meters) is worth another try.
 const IGNORE_MOVE_DISTANCE := 1.5
 
 
@@ -114,22 +117,31 @@ func _ready() -> void:
 	_navigation = $Navigation
 	_model = $Model
 	_area = $Area
+	_animation_player = _find_animation_player(_model)
+	if strip_root_motion:
+		_strip_root_motion()
+	_print_clips()
 	_tether_position = global_position
+
 	if not tether.is_empty():
 		var marker := get_node_or_null(tether) as Node3D
 		if marker:
 			_tether_position = marker.global_position
-	if show_debug_label:
-		_build_debug_label()
-		_update_debug_label()
+
+	_play_look_animation()
 
 
 func _physics_process(delta: float) -> void:
 	_state_time += delta
+	_moving = false
+
 	if not active:
 		_stand_still(delta)
+		_update_animation()
 		return
+
 	_check_contacts()
+
 	match _state:
 		State.IDLE:
 			_update_idle(delta)
@@ -139,37 +151,44 @@ func _physics_process(delta: float) -> void:
 			_update_search(delta)
 		State.RETURN:
 			_update_return(delta)
+		State.ATTACK:
+			_update_attack(delta)
 		State.DONE:
 			_stand_still(delta)
+
+	_update_animation()
 
 
 # ------------------------------------------------------------- activation
 
-## Start looking for lights.
 func activate() -> void:
 	active = true
 	_enter(State.IDLE)
 
 
-## Stop completely (the owner usually frees the Seeker instead).
 func deactivate() -> void:
 	active = false
 	_target = null
+	_attack_target = null
+	_ignored_light = null
+	_handled_ids.clear()
 	velocity = Vector3.ZERO
+	if _animation_player != null:
+		_animation_player.stop()
 	_enter(State.IDLE)
 
 
-## Put the Seeker down at a spot and make it its tether (home).
+## Human readable state, used by the test room's debug label.
+func state_name() -> String:
+	if not active:
+		return "INACTIVE"
+	return String(State.keys()[_state])
+
+
 func place_at(pos: Vector3) -> void:
 	global_position = pos
 	_tether_position = pos
 	velocity = Vector3.ZERO
-
-
-func state_name() -> String:
-	if not active:
-		return "WAITING (press T)"
-	return State.keys()[_state]
 
 
 # ------------------------------------------------------------------ states
@@ -184,10 +203,20 @@ func _update_idle(delta: float) -> void:
 
 
 func _update_approach(delta: float) -> void:
-	# A light that was switched off, freed or taken away is lost immediately.
-	if not _light_is_on(_target):
-		_enter(State.SEARCH)
+	if _light_is_on(_target):
+		_light_off_time = 0.0
+		_last_target_pos = _target.global_position
+	else:
+		# The light went off: keep heading to where it was for a moment
+		# before giving up.
+		_light_off_time += delta
+		if _light_off_time >= light_off_delay:
+			_enter(State.SEARCH)
+			return
+		_refresh_path(delta, _last_target_pos)
+		_move_toward(_last_target_pos, approach_speed, delta)
 		return
+
 	if _light_check_due(delta):
 		var best := _find_valid_light()
 		if best == null:
@@ -196,18 +225,20 @@ func _update_approach(delta: float) -> void:
 		if best != _target:
 			_target = best
 			_repath_timer = repath_interval
+
 	var target_pos := _target.global_position
 	if _in_reach_of(_target):
 		_attack_source(_target)
 		return
+
 	_refresh_path(delta, target_pos)
-	# The closest reachable point is as far as the navmesh goes.
 	if _path_exhausted() and not _plowing:
 		_ignored_light = _target
 		_ignored_pos = _target.global_position
 		_target = null
 		_enter(State.SEARCH)
 		return
+
 	_move_toward(target_pos, approach_speed, delta)
 
 
@@ -230,37 +261,269 @@ func _update_return(delta: float) -> void:
 			_target = light
 			_enter(State.APPROACH)
 			return
+
 	if _flat_distance(_tether_position) <= tether_tolerance:
 		_enter(State.IDLE)
 		return
+
 	if _flat_distance(_tether_position) <= HOME_STRETCH:
-		# The navigation agent stops a little short of its target, so the last
-		# stretch home is walked straight.
 		_move_toward(_tether_position, return_speed, delta, true)
 		return
+
 	_refresh_path(delta, _tether_position)
 	if _path_exhausted() and not _plowing:
-		# Home is unreachable from here: stay put rather than jitter.
 		_enter(State.IDLE)
 		return
+
 	_move_toward(_tether_position, return_speed, delta)
+
+
+func _update_attack(delta: float) -> void:
+	_stand_still(delta)
+
+	if is_instance_valid(_attack_target):
+		var to_target := _attack_target.global_position - global_position
+		to_target.y = 0.0
+		if to_target.length() > 0.05:
+			_face(to_target.normalized(), delta)
+
+	# The attack clip is started once in _enter() and is never restarted or
+	# replaced while it plays. The attack lands when the whole clip is done.
+	if _state_time < maxf(_attack_duration, 0.1):
+		return
+
+	_finish_attack()
 
 
 func _enter(new_state: State) -> void:
 	_state = new_state
 	_state_time = 0.0
 	_light_timer = 0.0
+	_light_off_time = 0.0
 	_plowing = false
 	_since_repath = 0.0
-	_repath_timer = repath_interval  # repath on the first moving frame
-	_update_debug_label()
+	_repath_timer = repath_interval
+
+	# Look / run clips are chosen every frame by _update_animation(); only the
+	# one-shot attack clip is started here.
+	if new_state == State.ATTACK:
+		_attack_duration = _play_attack_animation()
+
+
+# ---------------------------------------------------------------- animation
+
+func _find_animation_player(from_node: Node) -> AnimationPlayer:
+	if from_node == null:
+		return null
+	var players: Array[Node] = from_node.find_children("*", "AnimationPlayer", true, false)
+	if not players.is_empty():
+		return players[0] as AnimationPlayer
+	return null
+
+
+## Flattens the horizontal travel of every position track in every clip,
+## measured in the Model's space (not the skeleton's), so the model no longer
+## slides forward and snaps back each loop. The Seeker.glb root (Mixamo Hips)
+## travels along the skeleton's Y axis, which becomes Model Z after the
+## Armature's 90-degree rotation. Vertical bob is kept.
+## The removed travel (in meters per loop) is remembered per clip for speed sync.
+func _strip_root_motion() -> void:
+	if _animation_player == null:
+		return
+	var root := _animation_player.get_node_or_null(_animation_player.root_node)
+	if root == null:
+		return
+	var model_inv := _model.global_transform.affine_inverse()
+	for clip_name in _animation_player.get_animation_list():
+		var anim := _animation_player.get_animation(clip_name)
+		var id := anim.get_instance_id()
+		if _stripped.has(id):
+			_clip_travel[clip_name] = _stripped[id]
+			continue
+		var clip_travel := 0.0
+		for i in anim.get_track_count():
+			if anim.track_get_type(i) != Animation.TYPE_POSITION_3D:
+				continue
+			var keys := anim.track_get_key_count(i)
+			if keys < 2:
+				continue
+			# Track space -> Model space, so "horizontal" really means X/Z.
+			var to_model := _track_to_model(root, anim.track_get_path(i), model_inv)
+			var to_track := to_model.affine_inverse()
+			var first: Vector3 = to_model * anim.track_get_key_value(i, 0)
+			var travel := 0.0
+			for k in keys:
+				var m: Vector3 = to_model * anim.track_get_key_value(i, k)
+				travel = maxf(travel, Vector2(m.x - first.x, m.z - first.z).length())
+			if travel <= root_motion_threshold:
+				continue
+			for k in keys:
+				var m: Vector3 = to_model * anim.track_get_key_value(i, k)
+				anim.track_set_key_value(i, k, to_track * Vector3(first.x, m.y, first.z))
+			# The keys span (keys - 1) intervals; add the missing step so this is
+			# the true travel per loop. Already in meters.
+			travel *= float(keys) / float(keys - 1)
+			clip_travel = maxf(clip_travel, travel)
+			if debug_animations:
+				print("Seeker: removed %.3f m of root motion from '%s' in clip '%s'" % [
+					travel, anim.track_get_path(i), clip_name])
+		_stripped[id] = clip_travel
+		_clip_travel[clip_name] = clip_travel
+
+
+## Transform that converts a position track's values into the Model's space.
+func _track_to_model(root: Node, path: NodePath, model_inv: Transform3D) -> Transform3D:
+	var node := root.get_node_or_null(NodePath(path.get_concatenated_names())) as Node3D
+	if node == null:
+		return Transform3D.IDENTITY
+	if node is Skeleton3D and path.get_subname_count() > 0:
+		var skel := node as Skeleton3D
+		var space := model_inv * skel.global_transform
+		var bone := skel.find_bone(String(path.get_subname(0)))
+		if bone >= 0 and skel.get_bone_parent(bone) >= 0:
+			space = space * skel.get_bone_global_rest(skel.get_bone_parent(bone))
+		return space
+	if node.get_parent() is Node3D:
+		return model_inv * (node.get_parent() as Node3D).global_transform
+	return model_inv * node.global_transform
+
+
+## Picks the clip from what the Seeker is really doing this frame:
+##   ATTACK            -> attack clip (started once in _enter, left alone)
+##   moving            -> run clip
+##   standing, SEARCH  -> look clip, played faster
+##   standing, other   -> look clip at normal speed
+func _update_animation() -> void:
+	if _animation_player == null:
+		return
+	if active and _state == State.ATTACK:
+		return
+	if _moving:
+		_play_run_animation()
+	elif active and _state == State.SEARCH:
+		_play_look_animation(true)
+	else:
+		_play_look_animation(false)
+
+
+func _play_look_animation(searching := false) -> void:
+	_play_animation(look_animation, true, search_look_speed if searching else idle_look_speed)
+
+
+func _play_run_animation() -> void:
+	_play_animation(run_animation, true, _run_playback_speed())
+
+
+func _run_playback_speed() -> float:
+	if not sync_run_to_movement:
+		return run_speed_scale
+	return clampf(_move_speed / _natural_run_speed(), 0.5, 3.0) * run_speed_scale
+
+
+## Meters per second the run clip covers on its own.
+func _natural_run_speed() -> float:
+	var clip := _resolve_animation_name(run_animation)
+	var travel: float = _clip_travel.get(clip, 0.0)
+	if travel > 0.05 and _animation_player != null:
+		var anim := _animation_player.get_animation(clip)
+		if anim != null and anim.length > 0.01:
+			return travel / anim.length
+	return maxf(run_reference_speed, 0.1)
+
+
+## Returns how long (seconds) the attack clip takes at its playback speed.
+func _play_attack_animation() -> float:
+	return _play_animation(attack_animation, false, attack_speed_scale)
+
+
+## Plays a clip and returns its duration in seconds (0 if it does not exist).
+func _play_animation(animation_name: StringName, looped: bool, speed := 1.0) -> float:
+	if _animation_player == null:
+		return 0.0
+
+	var resolved_name := _resolve_animation_name(animation_name)
+	if resolved_name == StringName():
+		return 0.0
+
+	var animation := _animation_player.get_animation(resolved_name)
+	var duration := animation.length / maxf(speed, 0.01) if animation else 0.0
+
+	_animation_player.speed_scale = speed
+	if _animation_player.current_animation == resolved_name and _animation_player.is_playing():
+		return duration
+
+	# Set the loop mode BEFORE playing so the clip starts with the right mode.
+	if animation:
+		animation.loop_mode = Animation.LOOP_LINEAR if looped else Animation.LOOP_NONE
+	if debug_animations:
+		print("Seeker: %s -> clip '%s' (speed %.2f)" % [animation_name, resolved_name, speed])
+	_animation_player.play(resolved_name, blend_time)
+	return duration
+
+
+## Exact name first, then a case-insensitive match that also accepts a
+## library / importer prefix (e.g. "Armature|Seeker_Run", "lib/Seeker_Run").
+func _find_clip_by_name(requested: StringName) -> StringName:
+	if _animation_player.has_animation(requested):
+		return requested
+	var wanted := String(requested).to_lower()
+	for clip in _animation_player.get_animation_list():
+		if String(clip).to_lower().ends_with(wanted):
+			return clip
+	return StringName()
+
+
+## Turns a requested clip name into a clip that really exists on the player.
+## If it is missing, a warning names the clips that do exist so the exported
+## names (or the three *_animation exports) can be fixed.
+func _resolve_animation_name(requested: StringName) -> StringName:
+	if _resolved_clips.has(requested):
+		return _resolved_clips[requested]
+
+	var result := _find_clip_by_name(requested)
+	if result == StringName():
+		push_warning("Seeker: clip '%s' not found. Available: %s" % [
+			requested, ", ".join(_animation_player.get_animation_list())])
+
+	_resolved_clips[requested] = result
+	return result
+
+
+func _print_clips() -> void:
+	if _animation_player == null:
+		push_warning("Seeker: no AnimationPlayer found inside the model.")
+		return
+	print("Seeker clips available:")
+	for clip in _animation_player.get_animation_list():
+		var anim := _animation_player.get_animation(clip)
+		print("  '%s'  length %.2fs" % [clip, anim.length])
+	if sync_run_to_movement:
+		print("Seeker: run clip natural speed %.2f m/s, moving at %.2f m/s" % [
+			_natural_run_speed(), approach_speed])
+	print("Seeker uses: look='%s' run='%s' attack='%s'" % [
+		_resolve_animation_name(look_animation),
+		_resolve_animation_name(run_animation),
+		_resolve_animation_name(attack_animation)])
 
 
 # ------------------------------------------------------------------ attack
 
-## Reaching a light source attacks the source. A held source means the holder
-## dies. The player is never chased for its own sake.
 func _attack_source(source: Node3D) -> void:
+	if not is_instance_valid(source):
+		_enter(State.SEARCH)
+		return
+	_attack_target = source
+	_enter(State.ATTACK)
+
+
+func _finish_attack() -> void:
+	var source := _attack_target
+	_attack_target = null
+
+	if not is_instance_valid(source):
+		_enter(State.SEARCH)
+		return
+
 	attacked_source.emit(source)
 	var held: bool = source.has_method("is_held") and source.is_held()
 	if held:
@@ -270,15 +533,13 @@ func _attack_source(source: Node3D) -> void:
 		killed_holder.emit(source)
 		_enter(State.DONE)
 		return
-	# TODO: placed light is destroyed (placing does not exist yet).
+
 	if source.has_method("destroy"):
 		source.destroy()
 	_target = null
 	_enter(State.SEARCH)
 
 
-## Close enough to attack? A carried light also counts when the Seeker is
-## close to the person carrying it.
 func _in_reach_of(source: Node3D) -> bool:
 	if _flat_distance(source.global_position) <= reach_distance:
 		return true
@@ -300,7 +561,6 @@ func _find_holder(source: Node) -> Node:
 
 # --------------------------------------------------------------- contacts
 
-## Anything it touches that it is strong enough to remove goes away.
 func _check_contacts() -> void:
 	if _state == State.DONE:
 		return
@@ -318,7 +578,6 @@ func _smash_obstacle(obstacle: Node) -> void:
 	if obstacle.has_method("destroy"):
 		obstacle.destroy()
 	else:
-		# Out of the tree right away, so a navmesh rebake no longer sees it.
 		var parent := obstacle.get_parent()
 		if parent:
 			parent.remove_child(obstacle)
@@ -326,8 +585,6 @@ func _smash_obstacle(obstacle: Node) -> void:
 	destroyed_obstacle.emit(obstacle)
 
 
-## Calls die() if the monster has one. Otherwise the owner reacts to the
-## killed_monster signal (the test room hides and disables the Stalker).
 func _kill_monster(monster: Node) -> void:
 	_handled_ids[monster.get_instance_id()] = true
 	if monster.has_method("die"):
@@ -350,8 +607,6 @@ func _light_is_on(source: Node3D) -> bool:
 		and source.has_method("is_light_on") and source.is_light_on()
 
 
-## Nearest light that is on, in range and (optionally) in view. Held or placed
-## makes no difference.
 func _find_valid_light() -> Node3D:
 	var best: Node3D = null
 	var best_dist := INF
@@ -380,7 +635,6 @@ func _has_line_of_sight(source: Node3D) -> bool:
 	var exclude := _body_rids_of(source)
 	exclude.append(get_rid())
 	var space := get_world_3d().direct_space_state
-	# Things the Seeker can smash do not hide a light; keep looking past them.
 	for i in 8:
 		var query := PhysicsRayQueryParameters3D.create(from, to, occluder_mask)
 		query.exclude = exclude
@@ -399,8 +653,6 @@ func _is_smashable(node: Node) -> bool:
 	return node.is_in_group(obstacle_group) or node.is_in_group(prey_group)
 
 
-## RIDs of the node and every physics body above it (a light carried by a
-## body must not be hidden by that body).
 func _body_rids_of(node: Node) -> Array[RID]:
 	var rids: Array[RID] = []
 	var current := node
@@ -428,8 +680,6 @@ func _path_exhausted() -> bool:
 	return _since_repath >= PATH_SETTLE_TIME and _navigation.is_navigation_finished()
 
 
-## Is the first thing between the Seeker and the destination something it can
-## smash through?
 func _smashable_in_the_way(target_pos: Vector3) -> bool:
 	var from := global_position + Vector3.UP * 0.9
 	var to := Vector3(target_pos.x, from.y, target_pos.z)
@@ -468,6 +718,8 @@ func _move_toward(target_pos: Vector3, speed: float, delta: float, force_straigh
 	if direction == Vector3.ZERO:
 		_stand_still(delta)
 		return
+	_moving = true
+	_move_speed = speed
 	_face(direction, delta)
 	velocity.x = direction.x * speed
 	velocity.z = direction.z * speed
@@ -495,7 +747,6 @@ func _face(direction: Vector3, delta: float) -> void:
 	_model.rotation.y = lerp_angle(_model.rotation.y, target_yaw, clampf(turn_speed * delta, 0.0, 1.0))
 
 
-## Yaw rotation that makes `model_forward` point at `direction`.
 func _yaw_to(direction: Vector3) -> float:
 	var d := direction
 	d.y = 0.0
@@ -506,21 +757,3 @@ func _yaw_to(direction: Vector3) -> float:
 	d = d.normalized()
 	forward = forward.normalized()
 	return -atan2(d.cross(forward).y, d.dot(forward))
-
-
-# ------------------------------------------------------------------ debug
-
-func _build_debug_label() -> void:
-	_debug_label = Label3D.new()
-	_debug_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_debug_label.no_depth_test = true
-	_debug_label.fixed_size = false
-	_debug_label.pixel_size = 0.008
-	_debug_label.font_size = 48
-	_debug_label.position = Vector3(0, 2.3, 0)
-	add_child(_debug_label)
-
-
-func _update_debug_label() -> void:
-	if _debug_label:
-		_debug_label.text = state_name()

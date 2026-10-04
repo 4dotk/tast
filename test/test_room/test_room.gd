@@ -55,6 +55,10 @@ var _monsters: Array[Node3D] = []
 ## instance_id -> the spot the monster was placed at (its home).
 var _monster_home: Dictionary = {}
 var _cubes: Array[StaticBody3D] = []
+## What the player placed, so a run that smashes cubes / kills stalkers can be
+## restored when the test stops: [{type, pos, node}] and cube centres.
+var _monster_layout: Array[Dictionary] = []
+var _cube_layout: Array[Vector3] = []
 var _enemy_ghost: MeshInstance3D
 var _cube_ghost: MeshInstance3D
 var _ghost_material: StandardMaterial3D
@@ -166,11 +170,18 @@ func _cycle_enemy_type() -> void:
 
 
 func _spawn_enemy_at(pos: Vector3) -> void:
+	var monster := _create_enemy(_enemy_type, pos)
+	_monster_layout.append({"type": _enemy_type, "pos": pos, "node": monster})
+
+
+func _create_enemy(type: int, pos: Vector3) -> Node3D:
 	var monster: Node3D
-	if _enemy_type == EnemyType.STALKER:
+	if type == EnemyType.STALKER:
 		var st := STALKER_SCENE.instantiate() as Stalker
 		st.visible = false
 		add_child(st)
+		# The Seeker only smashes things in its prey group.
+		st.add_to_group(&"stalker")
 		st.relocate(pos)
 		st.visible = true
 		st.player_killed.connect(_on_player_killed.bind(st))
@@ -179,7 +190,6 @@ func _spawn_enemy_at(pos: Vector3) -> void:
 		var sk := SEEKER_SCENE.instantiate() as Seeker
 		sk.visible = false
 		add_child(sk)
-		sk.show_debug_label = true
 		sk.place_at(pos)
 		sk.visible = true
 		sk.killed_holder.connect(_on_seeker_killed_holder)
@@ -188,6 +198,27 @@ func _spawn_enemy_at(pos: Vector3) -> void:
 		monster = sk
 	_monsters.append(monster)
 	_monster_home[monster.get_instance_id()] = pos
+	return monster
+
+
+## Bring back what a run destroyed (stalkers killed by a Seeker, cubes it
+## smashed) so every run starts from the layout the player placed.
+func _restore_run_casualties() -> void:
+	for entry in _monster_layout:
+		var node: Node3D = entry["node"]
+		if is_instance_valid(node) and node in _monsters:
+			continue
+		entry["node"] = _create_enemy(entry["type"], entry["pos"])
+	if _cubes.size() != _cube_layout.size():
+		for cube in _cubes:
+			if is_instance_valid(cube):
+				if cube.get_parent():
+					cube.get_parent().remove_child(cube)
+				cube.queue_free()
+		_cubes.clear()
+		for pos in _cube_layout:
+			_create_cube(pos)
+		_request_rebake()
 
 
 # --------------------------------------------------------------- start / stop
@@ -209,6 +240,7 @@ func _start_test() -> void:
 
 
 func _stop_test(message: String) -> void:
+	_restore_run_casualties()
 	for m in _monsters:
 		_return_monster_home(m)
 	_phase = Phase.PREPARE
@@ -371,6 +403,13 @@ func _confirm_cube_place() -> void:
 func _place_cube() -> void:
 	var pos := _cube_ghost.position
 	_last_cube_pos = pos
+	_create_cube(pos)
+	_cube_layout.append(pos)
+	_request_rebake()
+	_say("Cube placed (%d total). E places more, Esc when done." % _cubes.size())
+
+
+func _create_cube(pos: Vector3) -> void:
 	var body := StaticBody3D.new()
 	body.add_to_group("obstacle")
 	var shape := CollisionShape3D.new()
@@ -387,8 +426,6 @@ func _place_cube() -> void:
 	_nav.add_child(body)
 	body.global_position = pos
 	_cubes.append(body)
-	_request_rebake()
-	_say("Cube placed (%d total). E places more, Esc when done." % _cubes.size())
 
 
 func _remove_last_cube() -> void:
@@ -396,6 +433,8 @@ func _remove_last_cube() -> void:
 		_say("No cubes to remove.")
 		return
 	var cube: StaticBody3D = _cubes.pop_back()
+	if not _cube_layout.is_empty():
+		_cube_layout.pop_back()
 	cube.get_parent().remove_child(cube)
 	cube.queue_free()
 	_request_rebake()
@@ -449,6 +488,8 @@ func _enemy_spot_valid() -> bool:
 	if _flat_dist(p, _subject.global_position) < DUMMY_MONSTER_MIN:
 		return false
 	for m in _monsters:
+		if not is_instance_valid(m):
+			continue
 		if _flat_dist(p, m.global_position) < MONSTER_GAP:
 			return false
 	if _min_dist_to_cubes(p) < MONSTER_CLEARANCE:
@@ -467,6 +508,8 @@ func _cube_spot_valid() -> bool:
 	if _dist_to_cube(_subject.global_position, p) < MONSTER_CLEARANCE:
 		return false
 	for m in _monsters:
+		if not is_instance_valid(m):
+			continue
 		if _dist_to_cube(m.global_position, p) < MONSTER_CLEARANCE:
 			return false
 	return true
@@ -638,6 +681,8 @@ func _update_label() -> void:
 		monster_lines.append("No enemies placed (press N).")
 	else:
 		for m in _monsters:
+			if not is_instance_valid(m):
+				continue
 			var line := "Enemy"
 			if m is Stalker:
 				line = "Stalker: " + (m as Stalker).state_name()
