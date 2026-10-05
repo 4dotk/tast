@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkurt8qtesuc5"
-path.s3tc="res://.godot/imported/flashlight_PsxFlashlight_Flashlight001_BaseColor.png-0f18a4a97014a75c82326f3fee431328.s3tc.ctex"
+uid="uid://ben60wqohnc8t"
+path.s3tc="res://.godot/imported/Player_p4.png-9b964eae61807f959a97db907a16d160.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "8f2b7de7d73c8049ab4e7c120b6c70ba"
+"md5": "93d414ef5125308d06aa4af7c6c92203"
 }
 
 [deps]
 
-source_file="res://assets/models/props/flashlight_PsxFlashlight_Flashlight001_BaseColor.png"
-dest_files=["res://.godot/imported/flashlight_PsxFlashlight_Flashlight001_BaseColor.png-0f18a4a97014a75c82326f3fee431328.s3tc.ctex"]
+source_file="res://assets/models/player/Player_p4.png"
+dest_files=["res://.godot/imported/Player_p4.png-9b964eae61807f959a97db907a16d160.s3tc.ctex"]
 
 [params]
 

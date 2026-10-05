@@ -1,7 +1,8 @@
 class_name Seeker
 extends CharacterBody3D
-## The Seeker - attracted to light sources, attacks them, and smashes through
-## obstacle cubes and stalkers that get in its way.
+## The Seeker - a slow brute attracted to light sources. It attacks them, and
+## when an obstacle cube or a stalker is in its way it stops, attacks that,
+## then carries on.
 ##
 ## The Seeker uses the seeker_model.tscn scene (Seeker.glb + the textured
 ## material override). Its AnimationPlayer is found inside that model and uses
@@ -10,8 +11,10 @@ extends CharacterBody3D
 ##   Seeker_Run
 ##   Seeker_Attack
 ##
-## It never targets the player directly. If the light source it attacks is
-## held, the holder dies as a consequence.
+## The collision box (Area) is its reach. Whenever the player is inside it,
+## whether the Seeker walked into the player or the player walked into the
+## Seeker, it plays the attack clip and the player dies when the hit lands.
+## The hit is skipped if the player has got well away by then.
 
 signal attacked_source(source: Node3D)
 signal killed_holder(source: Node3D)
@@ -19,6 +22,8 @@ signal killed_monster(monster: Node3D)
 signal destroyed_obstacle(obstacle: Node3D)
 
 enum State { IDLE, APPROACH, SEARCH, RETURN, ATTACK, DONE }
+## What the current ATTACK is aimed at.
+enum AttackKind { SOURCE, BLOCKER, PLAYER }
 
 @export_group("Tether")
 @export var tether: NodePath
@@ -33,8 +38,9 @@ enum State { IDLE, APPROACH, SEARCH, RETURN, ATTACK, DONE }
 @export var light_off_delay := 0.5
 
 @export_group("Movement")
-@export var approach_speed := 4.0
-@export var return_speed := 3.0
+## Slower than the Stalker on purpose (brute).
+@export var approach_speed := 3.5
+@export var return_speed := 2.6
 @export var gravity := 25.0
 @export var reach_distance := 1.0
 @export var holder_reach_distance := 1.4
@@ -50,6 +56,21 @@ enum State { IDLE, APPROACH, SEARCH, RETURN, ATTACK, DONE }
 @export var plow_through_obstacles := true
 @export var plow_probe_distance := 8.0
 
+@export_group("Attack")
+## While heading for a target through an obstacle or monster, the Seeker stops
+## and attacks it once it is this close (meters, measured from the Seeker's
+## centre).
+@export var obstacle_attack_distance := 1.3
+## When the hit lands, as a fraction of the attack clip: set it to the frame
+## where the claw connects. 0 = the instant the attack starts, 1 = the end.
+## The rest of the clip plays as follow-through.
+@export_range(0.0, 1.0) var attack_hit_fraction := 0.5
+## A hit only lands if its target is still within reach plus this many meters
+## when it lands: brushing past still gets hit, running away dodges it.
+@export var attack_hit_slack := 1.0
+## Group of the player body that triggers an attack when it is in the box.
+@export var player_group: StringName = &"player"
+
 @export_group("Animation")
 @export var look_animation: StringName = &"Seeker_Look"
 @export var run_animation: StringName = &"Seeker_Run"
@@ -62,6 +83,8 @@ enum State { IDLE, APPROACH, SEARCH, RETURN, ATTACK, DONE }
 @export var search_look_speed := 1.8
 @export var run_speed_scale := 0.5
 @export var attack_speed_scale := 1.0
+## Short cross-fade into the attack so the swing is not eaten by a long blend.
+@export var attack_blend_time := 0.05
 ## The run clip moves the model forward and snaps it back every loop. Since
 ## the body is moved by the CharacterBody3D, flatten that horizontal travel on
 ## the root tracks so the model stays in place and only the legs animate.
@@ -99,6 +122,12 @@ var _resolved_clips := {}
 ## True on frames where the Seeker is actually trying to walk somewhere.
 var _moving := false
 var _attack_duration := 0.0
+var _attack_kind: AttackKind = AttackKind.SOURCE
+## State to go back to after attacking something that blocked the way.
+var _resume_state: State = State.IDLE
+var _attack_hit_done := false
+var _attack_missed := false
+var _holder_killed := false
 var _light_off_time := 0.0
 var _move_speed := 3.0
 ## clip name -> meters of forward travel per loop that was removed.
@@ -287,12 +316,13 @@ func _update_attack(delta: float) -> void:
 		if to_target.length() > 0.05:
 			_face(to_target.normalized(), delta)
 
-	# The attack clip is started once in _enter() and is never restarted or
-	# replaced while it plays. The attack lands when the whole clip is done.
-	if _state_time < maxf(_attack_duration, 0.1):
-		return
+	_try_attack_hit()
 
-	_finish_attack()
+	# The attack clip is started once in _enter() and is never restarted or
+	# replaced while it plays. The hit has already landed by now (see
+	# attack_hit_fraction); this only waits for the follow-through to finish.
+	if _state_time >= maxf(_attack_duration, 0.1):
+		_end_attack()
 
 
 func _enter(new_state: State) -> void:
@@ -307,6 +337,9 @@ func _enter(new_state: State) -> void:
 	# Look / run clips are chosen every frame by _update_animation(); only the
 	# one-shot attack clip is started here.
 	if new_state == State.ATTACK:
+		_attack_hit_done = false
+		_attack_missed = false
+		_holder_killed = false
 		_attack_duration = _play_attack_animation()
 
 
@@ -432,12 +465,20 @@ func _natural_run_speed() -> float:
 
 
 ## Returns how long (seconds) the attack clip takes at its playback speed.
+## Always starts from the first frame, with a short blend.
 func _play_attack_animation() -> float:
-	return _play_animation(attack_animation, false, attack_speed_scale)
+	return _play_animation(attack_animation, false, attack_speed_scale, attack_blend_time, true)
 
 
 ## Plays a clip and returns its duration in seconds (0 if it does not exist).
-func _play_animation(animation_name: StringName, looped: bool, speed := 1.0) -> float:
+## blend < 0 uses blend_time. restart = start over even if it is already playing.
+func _play_animation(
+	animation_name: StringName,
+	looped: bool,
+	speed := 1.0,
+	blend := -1.0,
+	restart := false
+) -> float:
 	if _animation_player == null:
 		return 0.0
 
@@ -450,6 +491,8 @@ func _play_animation(animation_name: StringName, looped: bool, speed := 1.0) -> 
 
 	_animation_player.speed_scale = speed
 	if _animation_player.current_animation == resolved_name and _animation_player.is_playing():
+		if restart:
+			_animation_player.seek(0.0, true)
 		return duration
 
 	# Set the loop mode BEFORE playing so the clip starts with the right mode.
@@ -457,7 +500,7 @@ func _play_animation(animation_name: StringName, looped: bool, speed := 1.0) -> 
 		animation.loop_mode = Animation.LOOP_LINEAR if looped else Animation.LOOP_NONE
 	if debug_animations:
 		print("Seeker: %s -> clip '%s' (speed %.2f)" % [animation_name, resolved_name, speed])
-	_animation_player.play(resolved_name, blend_time)
+	_animation_player.play(resolved_name, blend_time if blend < 0.0 else blend)
 	return duration
 
 
@@ -513,41 +556,121 @@ func _attack_source(source: Node3D) -> void:
 		_enter(State.SEARCH)
 		return
 	_attack_target = source
+	_attack_kind = AttackKind.SOURCE
 	_enter(State.ATTACK)
+	_try_attack_hit()
 
 
-func _finish_attack() -> void:
-	var source := _attack_target
-	_attack_target = null
+## The player is in the collision box: play the attack, and the player dies
+## when the hit lands (see attack_hit_fraction).
+func _begin_player_attack(player: Node3D) -> void:
+	_attack_target = player
+	_attack_kind = AttackKind.PLAYER
+	_enter(State.ATTACK)
+	_try_attack_hit()
 
-	if not is_instance_valid(source):
-		_enter(State.SEARCH)
+
+## Something that blocks the way (obstacle cube / monster): stop, attack it,
+## then go back to whatever the Seeker was doing.
+func _begin_blocker_attack(blocker: Node3D) -> void:
+	_resume_state = _state
+	_attack_target = blocker
+	_attack_kind = AttackKind.BLOCKER
+	_enter(State.ATTACK)
+	_try_attack_hit()
+
+
+## Lands the hit once the attack clip has reached attack_hit_fraction
+## (0 = right away).
+func _try_attack_hit() -> void:
+	if _attack_hit_done:
+		return
+	if _state_time < _attack_duration * attack_hit_fraction:
+		return
+	_attack_hit_done = true
+	_apply_attack_hit()
+
+
+func _apply_attack_hit() -> void:
+	var victim := _attack_target
+	if not is_instance_valid(victim):
+		_attack_missed = true
+		return
+
+	match _attack_kind:
+		AttackKind.BLOCKER:
+			if victim.is_in_group(prey_group):
+				_kill_monster(victim)
+			else:
+				_smash_obstacle(victim)
+		AttackKind.PLAYER:
+			_hit_player(victim)
+		_:
+			_hit_source(victim)
+
+
+## The claw connects: the player dies unless it has got well away.
+func _hit_player(player: Node3D) -> void:
+	if player.is_in_group(&"dead") \
+			or _flat_distance(player.global_position) > holder_reach_distance + attack_hit_slack:
+		_attack_missed = true
+		return
+
+	var source: Node3D = player
+	if player.has_method("get_flashlight"):
+		var torch = player.get_flashlight()
+		if torch is Node3D:
+			source = torch
+
+	attacked_source.emit(source)
+	if player.has_method("die"):
+		player.die(global_position)
+	killed_holder.emit(source)
+	_holder_killed = true
+
+
+## A light that is lying on the ground. (A held light is handled as the player.)
+func _hit_source(source: Node3D) -> void:
+	if source.has_method("is_held") and source.is_held():
+		_attack_missed = true
+		return
+	if not _in_reach_of(source, attack_hit_slack):
+		_attack_missed = true
 		return
 
 	attacked_source.emit(source)
-	var held: bool = source.has_method("is_held") and source.is_held()
-	if held:
-		var holder := _find_holder(source)
-		if holder and holder.has_method("die"):
-			holder.die()
-		killed_holder.emit(source)
+	if source.has_method("destroy"):
+		source.destroy()
+
+
+## The attack clip has finished playing: decide what to do next.
+func _end_attack() -> void:
+	var kind := _attack_kind
+	_attack_target = null
+
+	if _holder_killed:
 		_enter(State.DONE)
 		return
 
-	if source.has_method("destroy"):
-		source.destroy()
+	if kind == AttackKind.BLOCKER:
+		_enter(_resume_state)
+		return
+
+	# Missed (the target got away): keep going for the same light if there is one.
+	if _attack_missed and _light_is_on(_target):
+		_enter(State.APPROACH)
+		return
+
 	_target = null
 	_enter(State.SEARCH)
 
 
-func _in_reach_of(source: Node3D) -> bool:
-	if _flat_distance(source.global_position) <= reach_distance:
-		return true
+## Dropped lights only. A held light is "reached" through its holder, which is
+## caught by the collision box in _check_contacts().
+func _in_reach_of(source: Node3D, extra := 0.0) -> bool:
 	if source.has_method("is_held") and source.is_held():
-		var holder := _find_holder(source) as Node3D
-		if holder != null and _flat_distance(holder.global_position) <= holder_reach_distance:
-			return true
-	return false
+		return false
+	return _flat_distance(source.global_position) <= reach_distance + extra
 
 
 func _find_holder(source: Node) -> Node:
@@ -561,16 +684,41 @@ func _find_holder(source: Node) -> Node:
 
 # --------------------------------------------------------------- contacts
 
+## Whatever enters the Seeker's collision box gets attacked, not deleted on the
+## spot. The player comes first and can interrupt an attack on an obstacle.
 func _check_contacts() -> void:
 	if _state == State.DONE:
+		return
+	if _state == State.ATTACK and _attack_kind == AttackKind.PLAYER:
+		return
+
+	var player := _find_player_in_box()
+	if player != null:
+		_begin_player_attack(player)
+		return
+
+	if _state == State.ATTACK:
 		return
 	for body in _area.get_overlapping_bodies():
 		if body == self or _handled_ids.has(body.get_instance_id()):
 			continue
-		if body.is_in_group(obstacle_group):
-			_smash_obstacle(body)
-		elif body.is_in_group(prey_group):
-			_kill_monster(body)
+		if body is Node3D and _is_smashable(body):
+			_begin_blocker_attack(body as Node3D)
+			return
+
+
+## The player, if it is inside the collision box. The distance check is a
+## safety net for the case where the Area does not see the player's layer.
+func _find_player_in_box() -> Node3D:
+	for node in get_tree().get_nodes_in_group(player_group):
+		var player := node as Node3D
+		if player == null or player.is_in_group(&"dead"):
+			continue
+		if player is CollisionObject3D and _area.overlaps_body(player):
+			return player
+		if _flat_distance(player.global_position) <= holder_reach_distance:
+			return player
+	return null
 
 
 func _smash_obstacle(obstacle: Node) -> void:
@@ -700,6 +848,32 @@ func _smashable_in_the_way(target_pos: Vector3) -> bool:
 	return collider != null and _is_smashable(collider)
 
 
+## The obstacle / monster directly ahead (within obstacle_attack_distance), or
+## null. Uses the same ray rules as _smashable_in_the_way().
+func _probe_blocker(direction: Vector3) -> Node3D:
+	var from := global_position + Vector3.UP * 0.9
+	var to := from + direction * obstacle_attack_distance
+	var exclude: Array[RID] = [get_rid()]
+	if is_instance_valid(_target):
+		exclude.append_array(_body_rids_of(_target))
+	var space := get_world_3d().direct_space_state
+	for i in 4:
+		var query := PhysicsRayQueryParameters3D.create(from, to, occluder_mask)
+		query.exclude = exclude
+		var hit := space.intersect_ray(query)
+		if hit.is_empty():
+			return null
+		var collider := hit.collider as Node3D
+		if collider == null or not _is_smashable(collider):
+			return null
+		if _handled_ids.has(collider.get_instance_id()):
+			# Already broken (its removal may still be pending): look past it.
+			exclude.append(hit.rid)
+			continue
+		return collider
+	return null
+
+
 func _steer_direction(target_pos: Vector3, force_straight := false) -> Vector3:
 	var straight := target_pos - global_position
 	straight.y = 0.0
@@ -718,6 +892,14 @@ func _move_toward(target_pos: Vector3, speed: float, delta: float, force_straigh
 	if direction == Vector3.ZERO:
 		_stand_still(delta)
 		return
+
+	# Something in the way to the target: stop and attack it first, then move on.
+	if _plowing:
+		var blocker := _probe_blocker(direction)
+		if blocker != null:
+			_begin_blocker_attack(blocker)
+			return
+
 	_moving = true
 	_move_speed = speed
 	_face(direction, delta)

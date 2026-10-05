@@ -39,8 +39,8 @@ enum State { IDLE, SCREAMING, CHASING, ATTACKING, FROZEN }
 
 @export_group("Feel")
 ## Constant chase speed (m/s). The jerkiness comes from the heading jitter and
-## rotation snaps below, not from speed changes.
-@export var move_speed := 3.6
+## rotation snaps below, not from speed changes. Faster than the Seeker.
+@export var move_speed := 4.4
 ## How long each lurch (one heading jitter) lasts.
 @export var lurch_interval_range := Vector2(0.18, 0.85)
 ## Random yaw offset (radians) applied to the path direction per lurch.

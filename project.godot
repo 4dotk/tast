@@ -13,7 +13,7 @@ config_version=5
 config/name="Theyre Still There"
 config/description="3D survival horror. Prototype: the Stalker."
 run/main_scene="res://ui/menus/main_menu/main_menu.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 
 [filesystem]
 
