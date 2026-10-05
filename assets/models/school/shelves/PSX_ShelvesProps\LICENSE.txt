@@ -1,0 +1,13 @@
+PSX Asset Pack - Licence
+
+You MAY:
+  - use these assets in personal and commercial projects
+    (games, films, videos, renders, jams)
+  - modify them however you like
+  - use them in as many projects as you want, forever
+
+You MAY NOT:
+  - resell, share or redistribute the assets themselves,
+    on their own or inside another asset pack or template
+
+Credit is not required, but it is always appreciated.
