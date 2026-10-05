@@ -1,0 +1,370 @@
+[gd_scene format=4 uid="uid://b35iqmx6j0shv"]
+
+[ext_resource type="PackedScene" uid="uid://b00pe8o5n7nma" path="res://assets/models/school/floor_vct.glb" id="1_bmgug"]
+[ext_resource type="PackedScene" uid="uid://boeeosr4wkt77" path="res://assets/models/seeker/Seeker.glb" id="1_q42ux"]
+[ext_resource type="Texture2D" uid="uid://cv6abmuhhimyg" path="res://assets/textures/school/vct.png" id="2_20opy"]
+[ext_resource type="Texture2D" uid="uid://br0fx53wyuvar" path="res://assets/models/seeker/Seeker_SkeletonMonster_PS2_BaseColor.png" id="2_wi0qq"]
+[ext_resource type="PackedScene" uid="uid://b05v2630qddlc" path="res://assets/models/school/wall_class.glb" id="3_8l0e1"]
+[ext_resource type="PackedScene" uid="uid://txabgqbr18d8" path="res://assets/models/player/Player.glb" id="4_lfnxh"]
+[ext_resource type="PackedScene" uid="uid://brhqxkw1xrsvi" path="res://assets/models/stalker/Stalker.fbx" id="4_s3q8p"]
+[ext_resource type="Texture2D" uid="uid://diufclv3ab3mh" path="res://assets/models/stalker/Stalker_Diffuse.png" id="5_u4kh1"]
+[ext_resource type="Texture2D" uid="uid://4l2sdp48f0e" path="res://assets/textures/school/glazed.png" id="9_svivd"]
+[ext_resource type="PackedScene" uid="uid://x8o2jv2g1t0c" path="res://assets/models/school/wall_doorway_class.glb" id="10_yafm2"]
+[ext_resource type="Texture2D" uid="uid://hclqtpfkw6x4" path="res://assets/textures/school/atlas.png" id="11_46211"]
+[ext_resource type="Texture2D" uid="uid://dpea511mgcp64" path="res://assets/textures/school/corridor_paint.png" id="12_t5hu4"]
+[ext_resource type="Texture2D" uid="uid://cf7nmksu2rm60" path="res://assets/textures/school/class_paint.png" id="13_eg35p"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_67vg4"]
+albedo_texture = ExtResource("2_wi0qq")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqvtj"]
+albedo_texture = ExtResource("5_u4kh1")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ofchu"]
+albedo_texture = ExtResource("2_20opy")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8swdu"]
+albedo_texture = ExtResource("2_20opy")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xe1ru"]
+albedo_texture = ExtResource("9_svivd")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6anhs"]
+albedo_texture = ExtResource("9_svivd")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jqk2e"]
+resource_name = "props"
+vertex_color_use_as_albedo = true
+texture_filter = 2
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3yn14"]
+_surfaces = [{
+"aabb": AABB(-1, 0, -0.1, 2, 3, 0.2),
+"format": 34896613377,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAgABAAQAAgAEAAUAAQAGAAQAAwAHAAEAAQAHAAYAAwAIAAcABwAJAAYACAAKAAcABwAKAAkACAALAAoACgAMAAkACwANAAoACgANAAwACwAOAA0ADQAPAAwADgAQAA0ADQAQAA8ADgARABAAEAASAA8AEQATABAAEAATABIAEwAUABIAEQAVABMAEwAWABQAFQAWABMAFQAXABYA"),
+"name": "props",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//AAD/f1VV//8AAP9/AAD//wAAAABVVf//AAD//1VV//8AAP//AAD//wAA//+qqv//AAD/f6qq//8AAAAAqqr//wAA////////AAD/f/////8AAAAA/////wAA/////wAAAAD/f///AAAAAAAA//8AAAAA//+qqgAAAAD/f6qqAAAAAAAAqqoAAAAA//9VVQAAAAD/f1VVAAAAAP//AAAAAAAAAABVVQAAAAD/fwAAAAAAAAAAAAAAAAAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6lcai"]
+resource_name = "wall_class_wall_class"
+_surfaces = [{
+"aabb": AABB(-1, 0, -0.1, 2, 3, 0.2),
+"attribute_data": PackedByteArray("r6+v/x9g3x//////338fAK+vr//ff98f/////x9gHwD/////338fALCwsP8fYN8f/////x9gHwCwsLD/33/fH/////8fgN8f/////9+fHwD/////35/fH/////8fgB8A/////9+fHwD/////H4DfH/////8fgB8A/////9+f3x//////H4DfH//////fnx8A/////9+f3x//////H4AfAP/////fnx8A/////x+A3x//////H4AfAP/////fn98fr6+v/x9g3x//////338fAK+vr//ff98f/////x9gHwD/////338fALCwsP8fYN8f/////x9gHwCwsLD/33/fH/////8fgN8f/////9+fHwD/////35/fH/////8fgB8A/////9+fHwD/////H4DfH/////8fgB8A/////9+f3x//////H4DfH//////fnx8A/////9+f3x//////H4AfAP/////fnx8A/////x+A3x//////H4AfAP/////fn98f/////x+A3x//////35+GGf/////fn98f/////x+Ahhn/////H4DfH//////fn4YZ/////9+f3x//////H4CGGQ=="),
+"format": 34896613407,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0AMAAxADIAMAAzADEANAA1ADYANAA3ADUA"),
+"material": SubResource("StandardMaterial3D_jqk2e"),
+"name": "props",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 56,
+"vertex_data": PackedByteArray("AAAAAP//AID/f1VV//8AgP9/AAD//wCAAABVVf//AIAAAFVVAAD///9/AAAAAP///39VVQAA//8AAAAAAAD//wAAVVX//wCA/3+qqv//AID/f1VV//8AgAAAqqr//wCAAACqqgAA////f1VVAAD///9/qqoAAP//AABVVQAA//8AAKqq//8AgP9//////wCA/3+qqv//AIAAAP////8AgAAA//8AAP///3+qqgAA////f///AAD//wAAqqoAAP///38AAP//AID//1VV//8AgP//AAD//wCA/39VVf//AID/f1VVAAD/////AAAAAP////9VVQAA////fwAAAAD///9/VVX//wCA//+qqv//AID//1VV//8AgP9/qqr//wCA/3+qqgAA/////1VVAAD/////qqoAAP///39VVQAA////f6qq//8AgP///////wCA//+qqv//AID/f/////8AgP9///8AAP////+qqgAA////////AAD///9/qqoAAP//AAD//////7//f///AAD/v/9///////+/AAD//wAA/7//f///////v/////8AAP+//////////7//f///AAD/v/9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3///////3////9/////f////3////9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_3yn14")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e28pm"]
+albedo_texture = ExtResource("9_svivd")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ekylg"]
+points = PackedVector3Array(-1, 0, -0.1, 1, 0, -0.1, -1, 0, 0.1, -1, 3, -0.1, 1, 0, 0.1, 1, 3, -0.1, -1, 3, 0.1, 1, 3, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tv8m3"]
+albedo_texture = ExtResource("11_46211")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8nkwk"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kyq6o"]
+albedo_texture = ExtResource("11_46211")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4gw27"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mb3d3"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q26s8"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o87u6"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h3b7p"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dvo5v"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_16jej"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c3ijv"]
+albedo_texture = ExtResource("12_t5hu4")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b1cs7"]
+albedo_texture = ExtResource("11_46211")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fxw2g"]
+albedo_texture = ExtResource("11_46211")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bm5fu"]
+albedo_texture = ExtResource("11_46211")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wf2kr"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ro52v"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7yfsq"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wcms2"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hs38q"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f34o0"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l4seb"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yw2fi"]
+albedo_texture = ExtResource("13_eg35p")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[node name="level_3" type="Node3D" unique_id=1160556661]
+
+[node name="Seeker" parent="." unique_id=2006853632 instance=ExtResource("1_q42ux")]
+transform = Transform3D(1.4901164e-07, -1.4210856e-14, -1.0000005, -1.4210855e-14, 1.0000006, -1.4210861e-14, 1.0000005, 1.4210855e-14, 1.1920932e-07, 15.000006, -1.1368684e-13, 6.4000063)
+
+[node name="obj1" parent="Seeker/Armature/Skeleton3D" parent_id_path=PackedInt32Array(2006853632, 117500150) index="0" unique_id=97783175]
+surface_material_override/0 = SubResource("StandardMaterial3D_67vg4")
+
+[node name="Player" parent="." unique_id=49792013 instance=ExtResource("4_lfnxh")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -5, 0, 1)
+
+[node name="Stalker" parent="." unique_id=942977734 instance=ExtResource("4_s3q8p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -4)
+
+[node name="MonsterPSX" parent="Stalker/MonsterPSX_Rig/Skeleton3D" parent_id_path=PackedInt32Array(942977734, 165739275) index="0" unique_id=1158617625]
+surface_material_override/0 = SubResource("StandardMaterial3D_mqvtj")
+
+[node name="floor_vct2" parent="." unique_id=1152699515 instance=ExtResource("1_bmgug")]
+transform = Transform3D(15, 0, 0, 0, 1, 0, 0, 0, 6, 0.8, 0, 0)
+
+[node name="floor_vct" parent="floor_vct2" index="0" unique_id=1135331910]
+transform = Transform3D(1.0000004, 0, 0, 0, 1, 0, 0, 0, 1, 0.050000016, 0, 0)
+material_override = SubResource("StandardMaterial3D_ofchu")
+
+[node name="floor_vct3" parent="." unique_id=924176679 instance=ExtResource("1_bmgug")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 9.1)
+
+[node name="floor_vct" parent="floor_vct3" index="0" unique_id=1135331910]
+transform = Transform3D(7, 0, 0, 0, 1, 0, 0, 0, 3, -0.45448303, 0, -0.09999943)
+material_override = SubResource("StandardMaterial3D_8swdu")
+
+[node name="stalker_room" parent="." unique_id=1561003061 instance=ExtResource("3_8l0e1")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -3, 0, -5)
+
+[node name="wall_class" parent="stalker_room" index="0" unique_id=373691711]
+transform = Transform3D(1.83, 0, 0, 0, 1, 0, 0, 0, 1, 0.6999998, 0, 0)
+material_override = SubResource("StandardMaterial3D_xe1ru")
+
+[node name="wall_class2" type="MeshInstance3D" parent="stalker_room" unique_id=486319142]
+transform = Transform3D(-6.9938224e-08, 0, -1, 0, 1, 0, 1.6, 0, -4.371139e-08, -1, 0, -1.5)
+material_override = SubResource("StandardMaterial3D_6anhs")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class3" type="MeshInstance3D" parent="stalker_room" unique_id=1090769568]
+transform = Transform3D(1.8299999, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0.6999998, 0, -2.9999998)
+material_override = SubResource("StandardMaterial3D_e28pm")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="stalker_room/wall_class3" unique_id=1983297991]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="stalker_room/wall_class3/StaticBody3D" unique_id=2039996270]
+shape = SubResource("ConvexPolygonShape3D_ekylg")
+
+[node name="wall_doorway_class2" parent="stalker_room" unique_id=7118474 instance=ExtResource("10_yafm2")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.5, 0, -1.5000001)
+
+[node name="wall_doorway_class" parent="stalker_room/wall_doorway_class2" index="0" unique_id=864815014]
+material_override = SubResource("StandardMaterial3D_tv8m3")
+
+[node name="wall_doorway_class_1" parent="stalker_room/wall_doorway_class2/wall_doorway_class" index="0" unique_id=1360031951]
+material_override = SubResource("StandardMaterial3D_8nkwk")
+
+[node name="wall_doorway_class_2" parent="stalker_room/wall_doorway_class2/wall_doorway_class" index="1" unique_id=974110318]
+material_override = SubResource("StandardMaterial3D_kyq6o")
+
+[node name="hallway" parent="." unique_id=313867606 instance=ExtResource("3_8l0e1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7000003, 0, -2.6)
+
+[node name="wall_class" parent="hallway" index="0" unique_id=373691711]
+transform = Transform3D(8.535, 0, 0, 0, 1, 0, 0, 0, 1, 7.299999, 0, 0.099999905)
+material_override = SubResource("StandardMaterial3D_4gw27")
+
+[node name="wall_class4" type="MeshInstance3D" parent="hallway" unique_id=194454345]
+transform = Transform3D(5.629, 0, 0, 0, 1, 0, 0, 0, 1, -8.799999, 0, 0.099999905)
+material_override = SubResource("StandardMaterial3D_mb3d3")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="hallway/wall_class4" unique_id=1542471913]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hallway/wall_class4/StaticBody3D" unique_id=969415215]
+shape = SubResource("ConvexPolygonShape3D_ekylg")
+
+[node name="wall_class2" type="MeshInstance3D" parent="hallway" unique_id=1102734960]
+transform = Transform3D(9.39, 0, 0, 0, 1, 0, 0, 0, 1, -4.7000003, 0, 2.6999998)
+material_override = SubResource("StandardMaterial3D_q26s8")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="hallway/wall_class2" unique_id=467520048]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hallway/wall_class2/StaticBody3D" unique_id=1946937567]
+shape = SubResource("ConvexPolygonShape3D_ekylg")
+
+[node name="wall_doorway_class2" parent="hallway/wall_class2" unique_id=53795821 instance=ExtResource("10_yafm2")]
+transform = Transform3D(-0.10649627, 0, -8.742278e-08, 0, 1, 0, 9.3102e-09, 0, -1, 1.0969115, 0, 9.685755e-08)
+
+[node name="wall_doorway_class" parent="hallway/wall_class2/wall_doorway_class2" index="0" unique_id=864815014]
+material_override = SubResource("StandardMaterial3D_o87u6")
+
+[node name="wall_doorway_class_1" parent="hallway/wall_class2/wall_doorway_class2/wall_doorway_class" index="0" unique_id=1360031951]
+material_override = SubResource("StandardMaterial3D_h3b7p")
+
+[node name="wall_doorway_class_2" parent="hallway/wall_class2/wall_doorway_class2/wall_doorway_class" index="1" unique_id=974110318]
+material_override = SubResource("StandardMaterial3D_dvo5v")
+
+[node name="wall_class3" type="MeshInstance3D" parent="hallway" unique_id=36108884]
+transform = Transform3D(2.9206078e-07, 0, 1, 0, 1, 0, -1.5, 0, 1.9470718e-07, 15.700001, 0, 1.2999995)
+material_override = SubResource("StandardMaterial3D_16jej")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class6" type="MeshInstance3D" parent="hallway" unique_id=310836162]
+transform = Transform3D(-4.679, 0, 3.8941437e-07, 0, 1, 0, -1.8220697e-06, 0, -1, 11.103426, 0, 2.6991224)
+material_override = SubResource("StandardMaterial3D_c3ijv")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="seeker_room" parent="." unique_id=431117986 instance=ExtResource("3_8l0e1")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15, 0, 11)
+
+[node name="wall_doorway_class2" parent="seeker_room" unique_id=66474604 instance=ExtResource("10_yafm2")]
+transform = Transform3D(1, 0, -1.7484555e-07, 0, 1, 0, 1.7484555e-07, 0, 1, 4.6000004, 0, 1.4000025)
+
+[node name="wall_doorway_class" parent="seeker_room/wall_doorway_class2" index="0" unique_id=864815014]
+material_override = SubResource("StandardMaterial3D_b1cs7")
+
+[node name="wall_doorway_class_1" parent="seeker_room/wall_doorway_class2/wall_doorway_class" index="0" unique_id=1360031951]
+material_override = SubResource("StandardMaterial3D_fxw2g")
+
+[node name="wall_doorway_class_2" parent="seeker_room/wall_doorway_class2/wall_doorway_class" index="1" unique_id=974110318]
+material_override = SubResource("StandardMaterial3D_bm5fu")
+
+[node name="wall_class" parent="seeker_room" index="1" unique_id=373691711]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5999994, 0, 1.4000025)
+material_override = SubResource("StandardMaterial3D_wf2kr")
+
+[node name="wall_class2" type="MeshInstance3D" parent="seeker_room" unique_id=1349703989]
+transform = Transform3D(-2.4828068e-07, 0, -1, 0, 1, 0, 5.68, 0, -4.371139e-08, 1.7000036, 0, -4.199992)
+material_override = SubResource("StandardMaterial3D_ro52v")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="seeker_room/wall_class2" unique_id=1796245906]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="seeker_room/wall_class2/StaticBody3D" unique_id=1123004455]
+shape = SubResource("ConvexPolygonShape3D_ekylg")
+
+[node name="wall_class4" type="MeshInstance3D" parent="seeker_room" unique_id=219251291]
+transform = Transform3D(1.61, 0, 0, 0, 1, 0, 0, 0, 1, 9.200001, 0, 1.4000044)
+material_override = SubResource("StandardMaterial3D_7yfsq")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class5" type="MeshInstance3D" parent="seeker_room" unique_id=1964124337]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6000004, 0, 1.4000044)
+material_override = SubResource("StandardMaterial3D_wcms2")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class6" type="MeshInstance3D" parent="seeker_room" unique_id=1645870295]
+transform = Transform3D(1.71, 0, 0, 0, 1, 0, 0, 0, 1, 9.300005, 0, -9.79999)
+material_override = SubResource("StandardMaterial3D_hs38q")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class7" type="MeshInstance3D" parent="seeker_room" unique_id=527493803]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6000032, 0, -9.79999)
+material_override = SubResource("StandardMaterial3D_f34o0")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class8" type="MeshInstance3D" parent="seeker_room" unique_id=47245181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.600004, 0, -9.79999)
+material_override = SubResource("StandardMaterial3D_l4seb")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[node name="wall_class9" type="MeshInstance3D" parent="seeker_room" unique_id=2025522004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6000032, 0, -9.79999)
+material_override = SubResource("StandardMaterial3D_yw2fi")
+mesh = SubResource("ArrayMesh_6lcai")
+
+[editable path="Seeker"]
+[editable path="Stalker"]
+[editable path="floor_vct2"]
+[editable path="floor_vct3"]
+[editable path="stalker_room"]
+[editable path="stalker_room/wall_doorway_class2"]
+[editable path="hallway"]
+[editable path="hallway/wall_class2/wall_doorway_class2"]
+[editable path="seeker_room"]
+[editable path="seeker_room/wall_doorway_class2"]
