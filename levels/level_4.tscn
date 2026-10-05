@@ -7,7 +7,11 @@
 [ext_resource type="PackedScene" uid="uid://x8o2jv2g1t0c" path="res://assets/models/school/wall_doorway_class.glb" id="5_hokjj"]
 [ext_resource type="PackedScene" uid="uid://xfljiljsl4aj" path="res://assets/models/school/wall_class_crayon.glb" id="6_0fd8o"]
 [ext_resource type="PackedScene" uid="uid://c07jr2acna6yg" path="res://entities/props/flashlight/flashlight.tscn" id="7_0fd8o"]
+[ext_resource type="PackedScene" uid="uid://bsblr2xnv42te" path="res://assets/models/school/shelves/PSX_ShelvesPropsHorrorItemsBookcase_Tall.glb" id="7_ng40l"]
 [ext_resource type="PackedScene" uid="uid://dhekkp4w262gv" path="res://entities/monsters/seeker/seeker.tscn" id="8_dmnu2"]
+[ext_resource type="PackedScene" uid="uid://x018bbdnkwvq" path="res://entities/player/player.tscn" id="10_04hp8"]
+[ext_resource type="PackedScene" uid="uid://p18xhaxmuisv" path="res://assets/models/school/shelves/PSX_ShelvesPropsHorrorItemsBookcase_Empty.glb" id="11_04hp8"]
+[ext_resource type="PackedScene" uid="uid://dge850epu6cvu" path="res://entities/monsters/stalker/stalker.tscn" id="12_8hlpj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t0qhu"]
 albedo_texture = ExtResource("2_s4mq8")
@@ -71,13 +75,57 @@ albedo_texture = ExtResource("4_t6q73")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8hlpj"]
 albedo_texture = ExtResource("4_t6q73")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vru0x"]
+resource_name = "props"
+texture_filter = 2
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5oqfd"]
+_surfaces = [{
+"aabb": AABB(-1, 0, -0.1, 2, 3, 0.2),
+"format": 34896613377,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAgABAAQAAgAEAAUAAQAGAAQAAwAHAAEAAQAHAAYAAwAIAAcABwAJAAYACAAKAAcABwAKAAkACAALAAoACgAMAAkACwANAAoACgANAAwACwAOAA0ADQAPAAwADgAQAA0ADQAQAA8ADgARABAAEAASAA8AEQATABAAEAATABIAEwAUABIAEQAVABMAEwAWABQAFQAWABMAFQAXABYA"),
+"name": "props",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//AAD/f1VV//8AAP9/AAD//wAAAABVVf//AAD//1VV//8AAP//AAD//wAA//+qqv//AAD/f6qq//8AAAAAqqr//wAA////////AAD/f/////8AAAAA/////wAA/////wAAAAD/f///AAAAAAAA//8AAAAA//+qqgAAAAD/f6qqAAAAAAAAqqoAAAAA//9VVQAAAAD/f1VVAAAAAP//AAAAAAAAAABVVQAAAAD/fwAAAAAAAAAAAAAAAAAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8mt0c"]
+resource_name = "wall_class_wall_class"
+_surfaces = [{
+"aabb": AABB(-1, 0, -0.1, 2, 3, 0.2),
+"attribute_data": PackedByteArray("r6+v/x9g3x//////338fAK+vr//ff98f/////x9gHwD/////338fALCwsP8fYN8f/////x9gHwCwsLD/33/fH/////8fgN8f/////9+fHwD/////35/fH/////8fgB8A/////9+fHwD/////H4DfH/////8fgB8A/////9+f3x//////H4DfH//////fnx8A/////9+f3x//////H4AfAP/////fnx8A/////x+A3x//////H4AfAP/////fn98fr6+v/x9g3x//////338fAK+vr//ff98f/////x9gHwD/////338fALCwsP8fYN8f/////x9gHwCwsLD/33/fH/////8fgN8f/////9+fHwD/////35/fH/////8fgB8A/////9+fHwD/////H4DfH/////8fgB8A/////9+f3x//////H4DfH//////fnx8A/////9+f3x//////H4AfAP/////fnx8A/////x+A3x//////H4AfAP/////fn98f/////x+A3x//////35+GGf/////fn98f/////x+Ahhn/////H4DfH//////fn4YZ/////9+f3x//////H4CGGQ=="),
+"format": 34896613407,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0AMAAxADIAMAAzADEANAA1ADYANAA3ADUA"),
+"material": SubResource("StandardMaterial3D_vru0x"),
+"name": "props",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 56,
+"vertex_data": PackedByteArray("AAAAAP//AID/f1VV//8AgP9/AAD//wCAAABVVf//AIAAAFVVAAD///9/AAAAAP///39VVQAA//8AAAAAAAD//wAAVVX//wCA/3+qqv//AID/f1VV//8AgAAAqqr//wCAAACqqgAA////f1VVAAD///9/qqoAAP//AABVVQAA//8AAKqq//8AgP9//////wCA/3+qqv//AIAAAP////8AgAAA//8AAP///3+qqgAA////f///AAD//wAAqqoAAP///38AAP//AID//1VV//8AgP//AAD//wCA/39VVf//AID/f1VVAAD/////AAAAAP////9VVQAA////fwAAAAD///9/VVX//wCA//+qqv//AID//1VV//8AgP9/qqr//wCA/3+qqgAA/////1VVAAD/////qqoAAP///39VVQAA////f6qq//8AgP///////wCA//+qqv//AID/f/////8AgP9///8AAP////+qqgAA////////AAD///9/qqoAAP//AAD//////7//f///AAD/v/9///////+/AAD//wAA/7//f///////v/////8AAP+//////////7//f///AAD/v/9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3////9/////f////3///////3////9/////f////3////9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_5oqfd")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_dp2yl"]
+points = PackedVector3Array(-1, 0, -0.1, 1, 0, -0.1, -1, 0, 0.1, -1, 3, -0.1, 1, 0, 0.1, 1, 3, -0.1, -1, 3, 0.1, 1, 3, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qhnv2"]
+albedo_texture = ExtResource("2_s4mq8")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
 [node name="Level4" type="Node3D" unique_id=1349628775]
 
 [node name="floor" parent="." unique_id=1270613395 instance=ExtResource("1_b15rf")]
-transform = Transform3D(15, 0, 0, 0, 4, 0, 0, 0, 7, 0, 0, 0)
+transform = Transform3D(11, 0, 0, 0, 4, 0, 0, 0, 7, -1.6074896, 0, 0)
 
 [node name="floor_vct" parent="floor" index="0" unique_id=431853489]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6054776, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60547763, 0, 0.011703423)
 material_override = SubResource("StandardMaterial3D_t0qhu")
 
 [node name="entrance" type="Node3D" parent="." unique_id=2077129632]
@@ -296,11 +344,624 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0078583, 0, 5.9141026)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 
+[node name="book_shelf_1" parent="seeker_room" unique_id=1533920267 instance=ExtResource("7_ng40l")]
+transform = Transform3D(-4.8082526e-08, 0, -1, 0, 1.2, 0, 1.1, 0, -4.371139e-08, 6.9101915, 0.0067973137, 5.014224)
+
+[node name="book_shelf_2" parent="seeker_room" unique_id=178935395 instance=ExtResource("7_ng40l")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1.2, 0, 8.742278e-08, 0, -1, 5.993, 0, 5.311)
+
+[node name="Obstacle_Destroyable" parent="seeker_room" unique_id=522573064 instance=ExtResource("11_04hp8")]
+transform = Transform3D(-0.18297008, 0.50270605, -0.9114033, -0.4052337, 1.1133705, 0.41151434, 1.2216004, 0.44462615, -3.9838703e-08, 6.624079, 0.12322295, 2.6065583)
+
+[node name="hallway" type="Node3D" parent="." unique_id=1683681779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.032571, 0, 0.13747132)
+
+[node name="hallway_wall_left" type="Node3D" parent="hallway" unique_id=884194763]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 10.369163, 0, 4.749153)
+
+[node name="hallway_wall_l1" parent="hallway/hallway_wall_left" unique_id=1619186356 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l2" parent="hallway/hallway_wall_left" unique_id=1636504198 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049457, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l3" parent="hallway/hallway_wall_left" unique_id=402922368 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.060721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l4" parent="hallway/hallway_wall_left" unique_id=2036782663 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0320945, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l5" parent="hallway/hallway_wall_left" unique_id=1245934945 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.627413, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l5" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l6" parent="hallway/hallway_wall_left" unique_id=1192782133 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6560383, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l6" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l7" parent="hallway/hallway_wall_left" unique_id=7293501 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7002635, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l7" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l8" parent="hallway/hallway_wall_left" unique_id=1302453238 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72888947, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l8" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l9" parent="hallway/hallway_wall_left" unique_id=983920233 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.50503, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l9" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l10" parent="hallway/hallway_wall_left" unique_id=1529515389 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.533655, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l10" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l11" parent="hallway/hallway_wall_left" unique_id=1010712907 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.577882, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l11" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l12" parent="hallway/hallway_wall_left" unique_id=2022635129 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.606507, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l12" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l13" parent="hallway/hallway_wall_left" unique_id=1287008056 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.266014, 0, -3.192748)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l13" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l14" parent="hallway/hallway_wall_left" unique_id=797234431 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.29464, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l14" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l15" parent="hallway/hallway_wall_left" unique_id=2044538992 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.338865, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l15" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l16" parent="hallway/hallway_wall_left" unique_id=1417167757 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.36749, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left/hallway_wall_l16" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_left2" type="Node3D" parent="hallway" unique_id=1221274012]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 10.369163, 0, 35.948498)
+
+[node name="hallway_wall_l1" parent="hallway/hallway_wall_left2" unique_id=1682511835 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l2" parent="hallway/hallway_wall_left2" unique_id=1053843207 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049457, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l3" parent="hallway/hallway_wall_left2" unique_id=107264058 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.060721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l4" parent="hallway/hallway_wall_left2" unique_id=634865056 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0320945, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l5" parent="hallway/hallway_wall_left2" unique_id=728374193 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.627413, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l5" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l6" parent="hallway/hallway_wall_left2" unique_id=2072719946 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6560383, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l6" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l7" parent="hallway/hallway_wall_left2" unique_id=2059843307 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7002635, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l7" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l8" parent="hallway/hallway_wall_left2" unique_id=41771276 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72888947, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l8" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l9" parent="hallway/hallway_wall_left2" unique_id=1602319516 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.50503, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l9" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l10" parent="hallway/hallway_wall_left2" unique_id=1280190951 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.533655, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l10" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l11" parent="hallway/hallway_wall_left2" unique_id=1511653945 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.577882, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l11" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l12" parent="hallway/hallway_wall_left2" unique_id=1737169275 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.606507, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l12" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l13" parent="hallway/hallway_wall_left2" unique_id=1819277251 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.266014, 0, -3.192748)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l13" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l14" parent="hallway/hallway_wall_left2" unique_id=1539612525 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.29464, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l14" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l15" parent="hallway/hallway_wall_left2" unique_id=834558693 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.338865, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l15" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l16" parent="hallway/hallway_wall_left2" unique_id=255597734 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.36749, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l16" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l17" parent="hallway/hallway_wall_left2" unique_id=1580693113 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.43953, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l17" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l18" parent="hallway/hallway_wall_left2" unique_id=750321254 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.468155, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l18" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l19" parent="hallway/hallway_wall_left2" unique_id=602871912 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.127663, 0, -3.192748)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l19" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l20" parent="hallway/hallway_wall_left2" unique_id=1795500218 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.156288, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l20" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l21" parent="hallway/hallway_wall_left2" unique_id=218933960 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.200516, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l21" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l22" parent="hallway/hallway_wall_left2" unique_id=1398854761 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.229141, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_left2/hallway_wall_l22" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_right" type="Node3D" parent="hallway" unique_id=764768309]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.1739225, 0, 13.853318)
+
+[node name="hallway_wall_l1" parent="hallway/hallway_wall_right" unique_id=754360726 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l2" parent="hallway/hallway_wall_right" unique_id=1698248558 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049457, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l3" parent="hallway/hallway_wall_right" unique_id=809976840 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.060721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l4" parent="hallway/hallway_wall_right" unique_id=1239971230 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0320945, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l5" parent="hallway/hallway_wall_right" unique_id=539013735 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.627413, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l5" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l6" parent="hallway/hallway_wall_right" unique_id=2020481103 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6560383, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l6" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l7" parent="hallway/hallway_wall_right" unique_id=524939290 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7002635, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l7" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l8" parent="hallway/hallway_wall_right" unique_id=1007710091 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72888947, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l8" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l9" parent="hallway/hallway_wall_right" unique_id=2072602947 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.50503, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l9" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l10" parent="hallway/hallway_wall_right" unique_id=1747993362 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.533655, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l10" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l11" parent="hallway/hallway_wall_right" unique_id=972398152 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.577882, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l11" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l12" parent="hallway/hallway_wall_right" unique_id=2085926312 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.606507, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l12" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l13" parent="hallway/hallway_wall_right" unique_id=1287373290 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.266014, 0, -3.192748)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l13" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l14" parent="hallway/hallway_wall_right" unique_id=1303235184 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.29464, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l14" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l15" parent="hallway/hallway_wall_right" unique_id=1174032118 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.338865, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l15" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l16" parent="hallway/hallway_wall_right" unique_id=1288779285 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.36749, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right/hallway_wall_l16" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_right2" type="Node3D" parent="hallway" unique_id=424951012]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.1739225, 0, 44.27394)
+
+[node name="hallway_wall_l1" parent="hallway/hallway_wall_right2" unique_id=1272524225 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l2" parent="hallway/hallway_wall_right2" unique_id=50228706 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049457, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l3" parent="hallway/hallway_wall_right2" unique_id=1379947155 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.060721, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l4" parent="hallway/hallway_wall_right2" unique_id=1584916031 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0320945, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l5" parent="hallway/hallway_wall_right2" unique_id=1905770077 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.627413, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l5" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l6" parent="hallway/hallway_wall_right2" unique_id=680544006 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6560383, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l6" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l7" parent="hallway/hallway_wall_right2" unique_id=1735684212 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7002635, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l7" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l8" parent="hallway/hallway_wall_right2" unique_id=950847530 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72888947, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l8" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l9" parent="hallway/hallway_wall_right2" unique_id=1152280967 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.50503, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l9" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l10" parent="hallway/hallway_wall_right2" unique_id=1602173893 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.533655, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l10" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l11" parent="hallway/hallway_wall_right2" unique_id=853563170 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.577882, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l11" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l12" parent="hallway/hallway_wall_right2" unique_id=1009301517 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.606507, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l12" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l13" parent="hallway/hallway_wall_right2" unique_id=526482114 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.266014, 0, -3.192748)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l13" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="wall_class2" type="MeshInstance3D" parent="hallway/hallway_wall_right2/hallway_wall_l13" unique_id=628441378]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.05583954, 0, 0.88670826)
+material_override = SubResource("StandardMaterial3D_hokjj")
+mesh = SubResource("ArrayMesh_8mt0c")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="hallway/hallway_wall_right2/hallway_wall_l13/wall_class2" unique_id=1526345009]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hallway/hallway_wall_right2/hallway_wall_l13/wall_class2/StaticBody3D" unique_id=284425942]
+shape = SubResource("ConvexPolygonShape3D_dp2yl")
+
+[node name="wall_class3" type="MeshInstance3D" parent="hallway/hallway_wall_right2/hallway_wall_l13" unique_id=560188896]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.05583954, 0, 2.8173294)
+material_override = SubResource("StandardMaterial3D_hokjj")
+mesh = SubResource("ArrayMesh_8mt0c")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="hallway/hallway_wall_right2/hallway_wall_l13/wall_class3" unique_id=1353070876]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hallway/hallway_wall_right2/hallway_wall_l13/wall_class3/StaticBody3D" unique_id=1294989895]
+shape = SubResource("ConvexPolygonShape3D_dp2yl")
+
+[node name="hallway_wall_l14" parent="hallway/hallway_wall_right2" unique_id=1195161514 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.29464, 0, -3.192747)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l14" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l15" parent="hallway/hallway_wall_right2" unique_id=1611007322 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.338865, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l15" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l16" parent="hallway/hallway_wall_right2" unique_id=1640718344 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.36749, 0, -3.1927462)
+
+[node name="wall_class" parent="hallway/hallway_wall_right2/hallway_wall_l16" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_stalker_room" type="Node3D" parent="hallway" unique_id=818259953]
+
+[node name="hallway_wall_l1" parent="hallway/hallway_stalker_room" unique_id=671446854 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335726, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l2" parent="hallway/hallway_stalker_room" unique_id=1712455676 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049452, 0, -3.1927452)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l3" parent="hallway/hallway_stalker_room" unique_id=494204191 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335726, 0, 5.995053)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l8" parent="hallway/hallway_stalker_room" unique_id=23030999 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049452, 0, 5.995053)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l8" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l4" parent="hallway/hallway_stalker_room" unique_id=2132082582 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8.069512, 0, -4.227661)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07006788, 0, -0.9367275)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l6" parent="hallway/hallway_stalker_room" unique_id=1218034303 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8.069512, 0, -6.183015)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l6" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07006788, 0, -0.9367275)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l5" parent="hallway/hallway_stalker_room" unique_id=1538538898 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.9628115, 0, -4.2991114)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l5" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09587574, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_wall_l7" parent="hallway/hallway_stalker_room" unique_id=1040890273 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.9628115, 0, -6.1888494)
+
+[node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l7" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09587574, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="hallway_floor" parent="hallway" unique_id=285260026 instance=ExtResource("1_b15rf")]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 30, 5.0689383, 0, 36.515636)
+
+[node name="floor_vct" parent="hallway/hallway_floor" index="0" unique_id=431853489]
+material_override = SubResource("StandardMaterial3D_qhnv2")
+
 [node name="Flashlight" parent="." unique_id=1076025218 instance=ExtResource("7_0fd8o")]
-transform = Transform3D(0.7071067, 0.7071068, -4.371139e-08, -3.090862e-08, -3.090862e-08, -1, -0.7071068, 0.7071067, 1.9106855e-15, -4.7089744, 0.03693813, -1.3631771)
+transform = Transform3D(0.5656854, 0.56568545, -3.090862e-08, 0, -3.4969112e-08, -1, -0.56568545, 0.5656854, -3.0908616e-08, -4.7089744, 0.03693813, -1.3631771)
 
 [node name="Seeker" parent="." unique_id=295831907 instance=ExtResource("8_dmnu2")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0.7581966, 0, 5.03341)
+
+[node name="Player" parent="." unique_id=1775233132 instance=ExtResource("10_04hp8")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -5.219764, 0, 0.4929502)
+
+[node name="Stalker" parent="." unique_id=767159777 instance=ExtResource("12_8hlpj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.058336, 3.6498957e-05, -4.5379663)
+
+[node name="Stalker2" parent="." unique_id=63509704 instance=ExtResource("12_8hlpj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.990727, 3.602212e-05, -5.9459677)
+
+[node name="Stalker3" parent="." unique_id=1003099209 instance=ExtResource("12_8hlpj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.478304, 3.602212e-05, -4.740198)
+
+[node name="Stalker4" parent="." unique_id=1000382605 instance=ExtResource("12_8hlpj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.44693, 3.602212e-05, -6.179353)
 
 [editable path="floor"]
 [editable path="entrance/entry_left_walls/entry_wall_l1"]
@@ -327,3 +988,82 @@ transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8
 [editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r2"]
 [editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r3"]
 [editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r4"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l1"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l2"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l3"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l4"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l5"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l6"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l7"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l8"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l9"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l10"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l11"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l12"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l13"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l14"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l15"]
+[editable path="hallway/hallway_wall_left/hallway_wall_l16"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l1"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l2"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l3"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l4"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l5"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l6"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l7"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l8"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l9"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l10"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l11"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l12"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l13"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l14"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l15"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l16"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l17"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l18"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l19"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l20"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l21"]
+[editable path="hallway/hallway_wall_left2/hallway_wall_l22"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l1"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l2"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l3"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l4"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l5"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l6"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l7"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l8"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l9"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l10"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l11"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l12"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l13"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l14"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l15"]
+[editable path="hallway/hallway_wall_right/hallway_wall_l16"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l1"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l2"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l3"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l4"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l5"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l6"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l7"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l8"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l9"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l10"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l11"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l12"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l13"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l14"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l15"]
+[editable path="hallway/hallway_wall_right2/hallway_wall_l16"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l1"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l2"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l3"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l8"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l4"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l6"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l5"]
+[editable path="hallway/hallway_stalker_room/hallway_wall_l7"]
+[editable path="hallway/hallway_floor"]
