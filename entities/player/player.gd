@@ -130,6 +130,8 @@ var _pickup_mount: BoneAttachment3D
 var _held_transform := Transform3D.IDENTITY
 
 signal died
+## Emitted during respawn, after the torch was put back in the hand. A level can take it away again.
+signal respawned
 ## Emitted when lock-on acquires a target, or with null when it is released.
 signal lock_target_changed(target: Node3D)
 
@@ -805,6 +807,7 @@ func _respawn() -> void:
 	if is_instance_valid(_flashlight):
 		_mount_flashlight(false)
 		_flashlight.set_light_on(true)
+	respawned.emit()
 
 	if play_getup_on_respawn:
 		# Stay "dead" (immune, no input) until the get-up clip is finished.
@@ -816,7 +819,8 @@ func _respawn() -> void:
 	_dead = false
 	remove_from_group("dead")
 	# Respawn pose is Idle, like the very first spawn.
-	_play(ANIM_IDLE_HELD, 1.0, 0.0)
+	var held_now := is_instance_valid(_flashlight) and _flashlight.is_held()
+	_play(ANIM_IDLE_HELD if held_now else ANIM_IDLE, 1.0, 0.0)
 	if _anim != null:
 		_anim.advance(0.0)
 

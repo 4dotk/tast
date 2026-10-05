@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://cngt5ivmhukr4"]
+[gd_scene format=4 uid="uid://ejok4c2ooj1l"]
 
 [ext_resource type="PackedScene" uid="uid://b00pe8o5n7nma" path="res://assets/models/school/floor_vct.glb" id="1_b15rf"]
 [ext_resource type="Texture2D" uid="uid://cv6abmuhhimyg" path="res://assets/textures/school/vct.png" id="2_s4mq8"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://hclqtpfkw6x4" path="res://assets/textures/school/atlas.png" id="4_t6q73"]
 [ext_resource type="PackedScene" uid="uid://x8o2jv2g1t0c" path="res://assets/models/school/wall_doorway_class.glb" id="5_hokjj"]
 [ext_resource type="PackedScene" uid="uid://xfljiljsl4aj" path="res://assets/models/school/wall_class_crayon.glb" id="6_0fd8o"]
+[ext_resource type="PackedScene" uid="uid://c07jr2acna6yg" path="res://entities/props/flashlight/flashlight.tscn" id="7_0fd8o"]
+[ext_resource type="PackedScene" uid="uid://dhekkp4w262gv" path="res://entities/monsters/seeker/seeker.tscn" id="8_dmnu2"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t0qhu"]
 albedo_texture = ExtResource("2_s4mq8")
@@ -71,132 +73,257 @@ albedo_texture = ExtResource("4_t6q73")
 
 [node name="Level4" type="Node3D" unique_id=1349628775]
 
-[node name="floor_vct2" parent="." unique_id=1270613395 instance=ExtResource("1_b15rf")]
-transform = Transform3D(15, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
+[node name="floor" parent="." unique_id=1270613395 instance=ExtResource("1_b15rf")]
+transform = Transform3D(15, 0, 0, 0, 4, 0, 0, 0, 7, 0, 0, 0)
 
-[node name="floor_vct" parent="floor_vct2" index="0" unique_id=511178571]
+[node name="floor_vct" parent="floor" index="0" unique_id=431853489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6054776, 0, 0)
 material_override = SubResource("StandardMaterial3D_t0qhu")
 
-[node name="wall_class2" parent="." unique_id=946118533 instance=ExtResource("3_t0qhu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8905048, 0, -2.4012508)
+[node name="entrance" type="Node3D" parent="." unique_id=2077129632]
 
-[node name="wall_class" parent="wall_class2" index="0" unique_id=277731253]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0590415, 0, 0)
-material_override = SubResource("StandardMaterial3D_hokjj")
+[node name="entry_left_walls" type="Node3D" parent="entrance" unique_id=1180207026]
 
-[node name="wall_class6" parent="." unique_id=188643775 instance=ExtResource("3_t0qhu")]
+[node name="entry_wall_l1" parent="entrance/entry_left_walls" unique_id=188643775 instance=ExtResource("3_t0qhu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8935184, 0, -2.4012508)
 
-[node name="wall_class" parent="wall_class6" index="0" unique_id=277731253]
+[node name="wall_class" parent="entrance/entry_left_walls/entry_wall_l1" index="0" unique_id=1374349983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.020547867, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 mesh = SubResource("ArrayMesh_6lcai")
 
-[node name="CollisionShape3D" parent="wall_class6/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(188643775, 1766496027) index="0" unique_id=703148813]
+[node name="CollisionShape3D" parent="entrance/entry_left_walls/entry_wall_l1/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(188643775, 86012815) index="0" unique_id=1935551686]
 shape = SubResource("ConvexPolygonShape3D_ekylg")
 
-[node name="wall_class3" parent="." unique_id=566151297 instance=ExtResource("3_t0qhu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0135868, 0, -2.4012508)
+[node name="entry_wall_l2" parent="entrance/entry_left_walls" unique_id=946118533 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8905048, 0, -2.4012508)
 
-[node name="wall_class" parent="wall_class3" index="0" unique_id=277731253]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
-material_override = SubResource("StandardMaterial3D_hokjj")
-
-[node name="wall_class4" parent="." unique_id=207717668 instance=ExtResource("3_t0qhu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8905048, 0, 2.5679686)
-
-[node name="wall_class" parent="wall_class4" index="0" unique_id=277731253]
+[node name="wall_class" parent="entrance/entry_left_walls/entry_wall_l2" index="0" unique_id=1374349983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0590415, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 
-[node name="wall_class7" parent="." unique_id=1465046439 instance=ExtResource("3_t0qhu")]
+[node name="entry_wall_l3" parent="entrance/entry_left_walls" unique_id=566151297 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0135868, 0, -2.4012508)
+
+[node name="wall_class" parent="entrance/entry_left_walls/entry_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="entry_right_walls" type="Node3D" parent="entrance" unique_id=1615488026]
+
+[node name="entry_wall_r1" parent="entrance/entry_right_walls" unique_id=1465046439 instance=ExtResource("3_t0qhu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.849882, 0, 2.5679686)
 
-[node name="wall_class" parent="wall_class7" index="0" unique_id=277731253]
+[node name="wall_class" parent="entrance/entry_right_walls/entry_wall_r1" index="0" unique_id=1374349983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0590415, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 mesh = SubResource("ArrayMesh_6lcai")
 
-[node name="CollisionShape3D" parent="wall_class7/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(1465046439, 1766496027) index="0" unique_id=703148813]
+[node name="CollisionShape3D" parent="entrance/entry_right_walls/entry_wall_r1/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(1465046439, 86012815) index="0" unique_id=1935551686]
 shape = SubResource("ConvexPolygonShape3D_ekylg")
 
-[node name="invisible_wall_1" parent="." unique_id=185205470 instance=ExtResource("3_t0qhu")]
+[node name="entry_wall_r2" parent="entrance/entry_right_walls" unique_id=207717668 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8905048, 0, 2.5679686)
+
+[node name="wall_class" parent="entrance/entry_right_walls/entry_wall_r2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0590415, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="entry_wall_r3" parent="entrance/entry_right_walls" unique_id=881256606 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0135868, 0, 2.5679686)
+
+[node name="wall_class" parent="entrance/entry_right_walls/entry_wall_r3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="invisible_walls" type="Node3D" parent="entrance" unique_id=503843579]
+
+[node name="invisible_wall_1" parent="entrance/invisible_walls" unique_id=185205470 instance=ExtResource("3_t0qhu")]
 transform = Transform3D(-5.6824803e-08, 0, -1, 0, 1, 0, 1.3, 0, -4.371139e-08, -5.914503, 0, 1.0660943)
 visible = false
 
-[node name="wall_class" parent="invisible_wall_1" index="0" unique_id=277731253]
+[node name="wall_class" parent="entrance/invisible_walls/invisible_wall_1" index="0" unique_id=1374349983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21567345, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 mesh = SubResource("ArrayMesh_6lcai")
 
-[node name="CollisionShape3D" parent="invisible_wall_1/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(185205470, 1766496027) index="0" unique_id=703148813]
+[node name="CollisionShape3D" parent="entrance/invisible_walls/invisible_wall_1/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(185205470, 86012815) index="0" unique_id=1935551686]
 shape = SubResource("ConvexPolygonShape3D_ekylg")
 
-[node name="invisible_wall_2" parent="." unique_id=660592002 instance=ExtResource("3_t0qhu")]
+[node name="invisible_wall_2" parent="entrance/invisible_walls" unique_id=660592002 instance=ExtResource("3_t0qhu")]
 transform = Transform3D(-5.6824803e-08, 0, -1, 0, 1, 0, 1.3, 0, -4.371139e-08, -5.914503, 0, 0.13108718)
 visible = false
 
-[node name="wall_class" parent="invisible_wall_2" index="0" unique_id=277731253]
+[node name="wall_class" parent="entrance/invisible_walls/invisible_wall_2" index="0" unique_id=1374349983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9994957, 0, 0)
 material_override = SubResource("StandardMaterial3D_hokjj")
 mesh = SubResource("ArrayMesh_6lcai")
 
-[node name="CollisionShape3D" parent="invisible_wall_2/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(660592002, 1766496027) index="0" unique_id=703148813]
+[node name="CollisionShape3D" parent="entrance/invisible_walls/invisible_wall_2/wall_class/StaticBody3D" parent_id_path=PackedInt32Array(660592002, 86012815) index="0" unique_id=1935551686]
 shape = SubResource("ConvexPolygonShape3D_ekylg")
 
-[node name="wall_class5" parent="." unique_id=881256606 instance=ExtResource("3_t0qhu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0135868, 0, 2.5679686)
+[node name="entry_doorway" type="Node3D" parent="entrance" unique_id=1234664616]
 
-[node name="wall_class" parent="wall_class5" index="0" unique_id=277731253]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
-material_override = SubResource("StandardMaterial3D_hokjj")
-
-[node name="wall_class2" type="MeshInstance3D" parent="wall_class5" unique_id=2046904088]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
-material_override = SubResource("StandardMaterial3D_hokjj")
-mesh = SubResource("ArrayMesh_6lcai")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="wall_class5/wall_class2" unique_id=1701588993]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="wall_class5/wall_class2/StaticBody3D" unique_id=1662979163]
-shape = SubResource("ConvexPolygonShape3D_ekylg")
-
-[node name="wall_doorway_class2" parent="." unique_id=415894573 instance=ExtResource("5_hokjj")]
+[node name="entry_doorway1" parent="entrance/entry_doorway" unique_id=415894573 instance=ExtResource("5_hokjj")]
 transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 0)
 
-[node name="wall_doorway_class" parent="wall_doorway_class2" index="0" unique_id=1319806225]
+[node name="wall_doorway_class" parent="entrance/entry_doorway/entry_doorway1" index="0" unique_id=1645337395]
 material_override = SubResource("StandardMaterial3D_dmnu2")
 
-[node name="wall_doorway_class_1" parent="wall_doorway_class2/wall_doorway_class" index="0" unique_id=1583676142]
+[node name="wall_doorway_class_1" parent="entrance/entry_doorway/entry_doorway1/wall_doorway_class" index="0" unique_id=1849715951]
 material_override = SubResource("StandardMaterial3D_sc6c1")
 
-[node name="wall_doorway_class_2" parent="wall_doorway_class2/wall_doorway_class" index="1" unique_id=1822494193]
+[node name="wall_doorway_class_2" parent="entrance/entry_doorway/entry_doorway1/wall_doorway_class" index="1" unique_id=2098720607]
 material_override = SubResource("StandardMaterial3D_ng40l")
 
-[node name="wall_class_crayon2" parent="." unique_id=975617563 instance=ExtResource("6_0fd8o")]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 2.4391727)
+[node name="entry_wall_crayon_r1" parent="entrance/entry_doorway" unique_id=975617563 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-6.556708e-08, 0, -1, 0, 1, 0, 1.5, 0, -4.371139e-08, 0, 0, 3.133092)
 
-[node name="wall_class_crayon" parent="wall_class_crayon2" index="0" unique_id=298636495]
+[node name="wall_class_crayon" parent="entrance/entry_doorway/entry_wall_crayon_r1" index="0" unique_id=337140939]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4479351, 0, -2.1874978e-08)
 material_override = SubResource("StandardMaterial3D_04hp8")
 
-[node name="wall_class_crayon3" parent="." unique_id=489484487 instance=ExtResource("6_0fd8o")]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, -1.462811)
+[node name="entry_wall_crayon_r2" parent="entrance/entry_doorway" unique_id=509592155 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-6.556708e-08, 0, 1, 0, 1, 0, -1.5, 0, -4.371139e-08, 0, 0, 4.648983)
 
-[node name="wall_class_crayon" parent="wall_class_crayon3" index="0" unique_id=298636495]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5201392, 0, -2.2736003e-08)
+[node name="wall_class_crayon" parent="entrance/entry_doorway/entry_wall_crayon_r2" index="0" unique_id=337140939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53591895, 0, -2.7643821e-08)
+material_override = SubResource("StandardMaterial3D_04hp8")
+
+[node name="entry_wall_crayon_l" parent="entrance/entry_doorway" unique_id=489484487 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, -1.462811)
+
+[node name="wall_class_crayon" parent="entrance/entry_doorway/entry_wall_crayon_l" index="0" unique_id=337140939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.538666, 0, -1.8716506e-08)
 material_override = SubResource("StandardMaterial3D_8hlpj")
 
-[editable path="floor_vct2"]
-[editable path="wall_class2"]
-[editable path="wall_class6"]
-[editable path="wall_class3"]
-[editable path="wall_class4"]
-[editable path="wall_class7"]
-[editable path="invisible_wall_1"]
-[editable path="invisible_wall_2"]
-[editable path="wall_class5"]
-[editable path="wall_doorway_class2"]
-[editable path="wall_class_crayon2"]
-[editable path="wall_class_crayon3"]
+[node name="seeker_room" type="Node3D" parent="." unique_id=245299891]
+
+[node name="seeker_room_exit" type="Node3D" parent="seeker_room" unique_id=1507193327]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 7.9970026, 0, 3.0728114)
+
+[node name="entry_doorway1" parent="seeker_room/seeker_room_exit" unique_id=1037189362 instance=ExtResource("5_hokjj")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 0)
+
+[node name="wall_doorway_class" parent="seeker_room/seeker_room_exit/entry_doorway1" index="0" unique_id=1645337395]
+material_override = SubResource("StandardMaterial3D_dmnu2")
+
+[node name="wall_doorway_class_1" parent="seeker_room/seeker_room_exit/entry_doorway1/wall_doorway_class" index="0" unique_id=1849715951]
+material_override = SubResource("StandardMaterial3D_sc6c1")
+
+[node name="wall_doorway_class_2" parent="seeker_room/seeker_room_exit/entry_doorway1/wall_doorway_class" index="1" unique_id=2098720607]
+material_override = SubResource("StandardMaterial3D_ng40l")
+
+[node name="entry_wall_crayon_r1" parent="seeker_room/seeker_room_exit" unique_id=971927756 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-6.556708e-08, 0, -1, 0, 1, 0, 1.5, 0, -4.371139e-08, 0, 0, 3.133092)
+
+[node name="wall_class_crayon" parent="seeker_room/seeker_room_exit/entry_wall_crayon_r1" index="0" unique_id=337140939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4479351, 0, -2.1874978e-08)
+material_override = SubResource("StandardMaterial3D_04hp8")
+
+[node name="entry_wall_crayon_r2" parent="seeker_room/seeker_room_exit" unique_id=138991015 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-6.556708e-08, 0, 1, 0, 1, 0, -1.5, 0, -4.371139e-08, 0, 0, 4.648983)
+
+[node name="wall_class_crayon" parent="seeker_room/seeker_room_exit/entry_wall_crayon_r2" index="0" unique_id=337140939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53591895, 0, -2.7643821e-08)
+material_override = SubResource("StandardMaterial3D_04hp8")
+
+[node name="entry_wall_crayon_l" parent="seeker_room/seeker_room_exit" unique_id=730699008 instance=ExtResource("6_0fd8o")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, -1.4258142)
+
+[node name="wall_class_crayon" parent="seeker_room/seeker_room_exit/entry_wall_crayon_l" index="0" unique_id=337140939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.538666, 0, -1.8716506e-08)
+material_override = SubResource("StandardMaterial3D_8hlpj")
+
+[node name="seeker_room_left_walls" type="Node3D" parent="seeker_room" unique_id=856681892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.13747132)
+
+[node name="seeker_room_wall_l1" parent="seeker_room/seeker_room_left_walls" unique_id=341248732 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
+
+[node name="wall_class" parent="seeker_room/seeker_room_left_walls/seeker_room_wall_l1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_l2" parent="seeker_room/seeker_room_left_walls" unique_id=993887196 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1049457, 0, -3.1927452)
+
+[node name="wall_class" parent="seeker_room/seeker_room_left_walls/seeker_room_wall_l2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_l3" parent="seeker_room/seeker_room_left_walls" unique_id=2051802738 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.060721, 0, -3.1927452)
+
+[node name="wall_class" parent="seeker_room/seeker_room_left_walls/seeker_room_wall_l3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_l4" parent="seeker_room/seeker_room_left_walls" unique_id=576840060 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0320945, 0, -3.1927452)
+
+[node name="wall_class" parent="seeker_room/seeker_room_left_walls/seeker_room_wall_l4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_right_walls" type="Node3D" parent="seeker_room" unique_id=648746620]
+
+[node name="seeker_room_wall_r1" parent="seeker_room/seeker_room_right_walls" unique_id=317192691 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, 5.9141026)
+
+[node name="wall_class" parent="seeker_room/seeker_room_right_walls/seeker_room_wall_r1" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_r2" parent="seeker_room/seeker_room_right_walls" unique_id=721255211 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1088858, 0, 5.9141026)
+
+[node name="wall_class" parent="seeker_room/seeker_room_right_walls/seeker_room_wall_r2" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_r3" parent="seeker_room/seeker_room_right_walls" unique_id=1748863001 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.032545, 0, 5.9141026)
+
+[node name="wall_class" parent="seeker_room/seeker_room_right_walls/seeker_room_wall_r3" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="seeker_room_wall_r4" parent="seeker_room/seeker_room_right_walls" unique_id=1411923536 instance=ExtResource("3_t0qhu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0078583, 0, 5.9141026)
+
+[node name="wall_class" parent="seeker_room/seeker_room_right_walls/seeker_room_wall_r4" index="0" unique_id=1374349983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, 0)
+material_override = SubResource("StandardMaterial3D_hokjj")
+
+[node name="Flashlight" parent="." unique_id=1076025218 instance=ExtResource("7_0fd8o")]
+transform = Transform3D(0.7071067, 0.7071068, -4.371139e-08, -3.090862e-08, -3.090862e-08, -1, -0.7071068, 0.7071067, 1.9106855e-15, -4.7089744, 0.03693813, -1.3631771)
+
+[node name="Seeker" parent="." unique_id=295831907 instance=ExtResource("8_dmnu2")]
+transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0.7581966, 0, 5.03341)
+
+[editable path="floor"]
+[editable path="entrance/entry_left_walls/entry_wall_l1"]
+[editable path="entrance/entry_left_walls/entry_wall_l2"]
+[editable path="entrance/entry_left_walls/entry_wall_l3"]
+[editable path="entrance/entry_right_walls/entry_wall_r1"]
+[editable path="entrance/entry_right_walls/entry_wall_r2"]
+[editable path="entrance/entry_right_walls/entry_wall_r3"]
+[editable path="entrance/invisible_walls/invisible_wall_1"]
+[editable path="entrance/invisible_walls/invisible_wall_2"]
+[editable path="entrance/entry_doorway/entry_doorway1"]
+[editable path="entrance/entry_doorway/entry_wall_crayon_r1"]
+[editable path="entrance/entry_doorway/entry_wall_crayon_r2"]
+[editable path="entrance/entry_doorway/entry_wall_crayon_l"]
+[editable path="seeker_room/seeker_room_exit/entry_doorway1"]
+[editable path="seeker_room/seeker_room_exit/entry_wall_crayon_r1"]
+[editable path="seeker_room/seeker_room_exit/entry_wall_crayon_r2"]
+[editable path="seeker_room/seeker_room_exit/entry_wall_crayon_l"]
+[editable path="seeker_room/seeker_room_left_walls/seeker_room_wall_l1"]
+[editable path="seeker_room/seeker_room_left_walls/seeker_room_wall_l2"]
+[editable path="seeker_room/seeker_room_left_walls/seeker_room_wall_l3"]
+[editable path="seeker_room/seeker_room_left_walls/seeker_room_wall_l4"]
+[editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r1"]
+[editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r2"]
+[editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r3"]
+[editable path="seeker_room/seeker_room_right_walls/seeker_room_wall_r4"]
