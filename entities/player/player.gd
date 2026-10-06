@@ -73,7 +73,7 @@ const RUN_FALLBACK_SPEED := 3.0
 @export_range(0.3, 1.0) var pickup_end_fraction := 0.9
 ## Playback multiplier for Player_Running_Held on top of the ground-speed match
 ## (1.0 = feet exactly match the ground). Lower = calmer run cycle.
-@export_range(0.3, 1.5) var run_held_anim_scale := 0.8
+@export_range(0.3, 2.0) var run_held_anim_scale := 1.3
 
 @export_group("Placing")
 ## The torch is L-shaped (handle down, head forward). To lie flat it is rolled

@@ -28,8 +28,16 @@ enum State { IDLE, SCREAMING, CHASING, ATTACKING, FROZEN }
 ## Distance (meters) at which the Stalker first notices the player and
 ## screams. 0 = notices the player immediately.
 @export var sight_range := 0.0
+## Walls block sight: the player only counts as seen when a ray from the
+## Stalker to the player is not stopped by anything on sight_mask.
+@export var require_line_of_sight := true
+@export_flags_3d_physics var sight_mask := 1
 ## Gravity used to keep the body planted on the floor.
 @export var gravity := 25.0
+## Wake up by itself the first time the torch beam hits it (it freezes in the
+## light, then screams and chases once the light moves off). Needed in levels
+## where nothing calls activate().
+@export var wake_on_light := false
 
 @export_group("Navigation")
 ## How often the Stalker pushes a fresh target into the navigation agent.
@@ -209,6 +217,8 @@ func set_lit(value: bool) -> void:
 		return
 	is_lit = value
 	if not active:
+		if value and wake_on_light:
+			activate()  # is_lit is already true, so this starts FROZEN.
 		return
 
 	if is_lit:
@@ -219,7 +229,8 @@ func set_lit(value: bool) -> void:
 		_scream_time = 0.0
 		_pause_body_anim()
 	elif state == State.FROZEN:
-		state = State.CHASING
+		# Never noticed the player yet: scream first, then chase.
+		state = State.CHASING if _has_screamed else State.IDLE
 		if _body_player:
 			_body_player.speed_scale = 1.0
 		_reset_feel_timers()
@@ -252,7 +263,21 @@ func _find_player() -> Node3D:
 func _can_see_player() -> bool:
 	if _player == null:
 		return false
-	return sight_range <= 0.0 or global_position.distance_to(_player.global_position) <= sight_range
+	if sight_range > 0.0 and global_position.distance_to(_player.global_position) > sight_range:
+		return false
+	return not require_line_of_sight or _has_line_of_sight()
+
+
+func _has_line_of_sight() -> bool:
+	var from := global_position + Vector3.UP * 1.2
+	var to := _player.global_position + Vector3.UP * 1.0
+	var query := PhysicsRayQueryParameters3D.create(from, to, sight_mask)
+	query.exclude = [get_rid()]
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return true
+	var collider := hit.collider as Node
+	return collider != null and (collider == _player or _player.is_ancestor_of(collider))
 
 
 ## Flat (XZ) vector from the Stalker to the player.

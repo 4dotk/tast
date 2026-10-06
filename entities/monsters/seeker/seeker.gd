@@ -112,6 +112,8 @@ var _repath_timer := 0.0
 var _since_repath := 0.0
 var _plowing := false
 var _handled_ids := {}
+## The model's yaw as placed in the scene; place_at() turns it back to this.
+var _home_model_yaw := 0.0
 var _ignored_light: Node3D = null
 var _ignored_pos := Vector3.ZERO
 var _navigation: NavigationAgent3D
@@ -145,6 +147,7 @@ func _ready() -> void:
 	add_to_group("enemies")
 	_navigation = $Navigation
 	_model = $Model
+	_home_model_yaw = _model.rotation.y
 	_area = $Area
 	_animation_player = _find_animation_player(_model)
 	if strip_root_motion:
@@ -216,6 +219,7 @@ func state_name() -> String:
 
 func place_at(pos: Vector3) -> void:
 	global_position = pos
+	_model.rotation.y = _home_model_yaw
 	_tether_position = pos
 	velocity = Vector3.ZERO
 
@@ -573,6 +577,11 @@ func _begin_player_attack(player: Node3D) -> void:
 ## Something that blocks the way (obstacle cube / monster): stop, attack it,
 ## then go back to whatever the Seeker was doing.
 func _begin_blocker_attack(blocker: Node3D) -> void:
+	var root := _smash_root(blocker) as Node3D
+	if root != null:
+		blocker = root
+	if _handled_ids.has(blocker.get_instance_id()):
+		return
 	_resume_state = _state
 	_attack_target = blocker
 	_attack_kind = AttackKind.BLOCKER
@@ -611,7 +620,7 @@ func _apply_attack_hit() -> void:
 
 ## The claw connects: the player dies unless it has got well away.
 func _hit_player(player: Node3D) -> void:
-	if player.is_in_group(&"dead") \
+	if player.is_in_group(&"dead") or _is_shielded(player) \
 			or _flat_distance(player.global_position) > holder_reach_distance + attack_hit_slack:
 		_attack_missed = true
 		return
@@ -712,7 +721,7 @@ func _check_contacts() -> void:
 func _find_player_in_box() -> Node3D:
 	for node in get_tree().get_nodes_in_group(player_group):
 		var player := node as Node3D
-		if player == null or player.is_in_group(&"dead"):
+		if player == null or player.is_in_group(&"dead") or _is_shielded(player):
 			continue
 		if player is CollisionObject3D and _area.overlaps_body(player):
 			return player
@@ -798,7 +807,32 @@ func _has_line_of_sight(source: Node3D) -> bool:
 
 
 func _is_smashable(node: Node) -> bool:
-	return node.is_in_group(obstacle_group) or node.is_in_group(prey_group)
+	return _smash_root(node) != null
+
+
+## The node that is in the obstacle / prey group: the collider itself or the
+## scene root above it (a glb's StaticBody3D is a child of the root, and the
+## whole prop has to go, not just its collider). null if there is none.
+func _smash_root(node: Node) -> Node:
+	var current := node
+	while current:
+		if current.is_in_group(obstacle_group) or current.is_in_group(prey_group):
+			return current
+		current = current.get_parent()
+	return null
+
+
+## true when something solid (a shelf, a wall, a monster) stands between the
+## Seeker and the player. An obstacle in the way protects the player: it has
+## to be smashed first.
+func _is_shielded(player: Node3D) -> bool:
+	var from := global_position + Vector3.UP * 0.9
+	var to := player.global_position + Vector3.UP * 0.9
+	var query := PhysicsRayQueryParameters3D.create(from, to, occluder_mask)
+	var exclude := _body_rids_of(player)
+	exclude.append(get_rid())
+	query.exclude = exclude
+	return not get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 
 func _body_rids_of(node: Node) -> Array[RID]:
@@ -930,7 +964,10 @@ func _face(direction: Vector3, delta: float) -> void:
 
 
 func _yaw_to(direction: Vector3) -> float:
-	var d := direction
+	# The model turns in the Seeker's LOCAL space, but `direction` is a world
+	# direction. If the Seeker is placed rotated in a level (it is in Level 4),
+	# using the world direction as-is leaves the model off by that rotation.
+	var d := global_transform.basis.orthonormalized().inverse() * direction
 	d.y = 0.0
 	var forward := model_forward
 	forward.y = 0.0

@@ -6,12 +6,18 @@
 [ext_resource type="Texture2D" uid="uid://hclqtpfkw6x4" path="res://assets/textures/school/atlas.png" id="4_t6q73"]
 [ext_resource type="PackedScene" uid="uid://x8o2jv2g1t0c" path="res://assets/models/school/wall_doorway_class.glb" id="5_hokjj"]
 [ext_resource type="PackedScene" uid="uid://xfljiljsl4aj" path="res://assets/models/school/wall_class_crayon.glb" id="6_0fd8o"]
-[ext_resource type="PackedScene" uid="uid://c07jr2acna6yg" path="res://entities/props/flashlight/flashlight.tscn" id="7_0fd8o"]
 [ext_resource type="PackedScene" uid="uid://bsblr2xnv42te" path="res://assets/models/school/shelves/PSX_ShelvesPropsHorrorItemsBookcase_Tall.glb" id="7_ng40l"]
 [ext_resource type="PackedScene" uid="uid://dhekkp4w262gv" path="res://entities/monsters/seeker/seeker.tscn" id="8_dmnu2"]
 [ext_resource type="PackedScene" uid="uid://x018bbdnkwvq" path="res://entities/player/player.tscn" id="10_04hp8"]
 [ext_resource type="PackedScene" uid="uid://p18xhaxmuisv" path="res://assets/models/school/shelves/PSX_ShelvesPropsHorrorItemsBookcase_Empty.glb" id="11_04hp8"]
 [ext_resource type="PackedScene" uid="uid://dge850epu6cvu" path="res://entities/monsters/stalker/stalker.tscn" id="12_8hlpj"]
+[ext_resource type="PackedScene" uid="uid://7hutdwbm6pfg" path="res://assets/models/school/ceiling_tiles.glb" id="14_5oqfd"]
+[ext_resource type="Texture2D" uid="uid://hhlfahpbatgk" path="res://assets/textures/school/ceiling_tile.png" id="15_8mt0c"]
+[ext_resource type="PackedScene" uid="uid://b5xu0dgauaoep" path="res://assets/models/school/ceiling_light.glb" id="16_8mt0c"]
+[ext_resource type="PackedScene" uid="uid://p2eca4gkd60j" path="res://assets/models/school/student_chair.glb" id="17_a7qdg"]
+[ext_resource type="Texture2D" uid="uid://djg0usnlod54j" path="res://assets/textures/school/brick.png" id="18_g1ha7"]
+[ext_resource type="Script" uid="uid://cgu8wn6gxtacm" path="res://levels/level_4.gd" id="level4_script"]
+[ext_resource type="PackedScene" path="res://entities/player/shoulder_camera.tscn" id="shoulder_cam"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t0qhu"]
 albedo_texture = ExtResource("2_s4mq8")
@@ -19,6 +25,7 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hokjj"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jqk2e"]
@@ -61,19 +68,30 @@ shadow_mesh = SubResource("ArrayMesh_3yn14")
 points = PackedVector3Array(-1, 0, -0.1, 1, 0, -0.1, -1, 0, 0.1, -1, 3, -0.1, 1, 0, 0.1, 1, 3, -0.1, -1, 3, 0.1, 1, 3, 0.1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dmnu2"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sc6c1"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ng40l"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_04hp8"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8hlpj"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
 albedo_texture = ExtResource("4_t6q73")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_52a3b"]
+albedo_texture = ExtResource("18_g1ha7")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_scare"]
+size = Vector3(1.2, 2.2, 2.6)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vru0x"]
 resource_name = "props"
@@ -119,16 +137,93 @@ albedo_texture = ExtResource("2_s4mq8")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="Level4" type="Node3D" unique_id=1349628775]
+[sub_resource type="NavigationMesh" id="NavigationMesh_l4"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+agent_height = 1.75
+agent_radius = 0.25
 
-[node name="floor" parent="." unique_id=1270613395 instance=ExtResource("1_b15rf")]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eqxkv"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+albedo_texture = ExtResource("15_8mt0c")
+
+[sub_resource type="Environment" id="Environment_l4"]
+background_mode = 1
+background_color = Color(0.005, 0.006, 0.008, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.58, 0.66, 1)
+ambient_light_energy = 0.45
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+glow_intensity = 0.5
+fog_enabled = true
+fog_light_color = Color(0.05, 0.065, 0.075, 1)
+fog_density = 0.04
+adjustment_enabled = true
+adjustment_contrast = 1.08
+adjustment_saturation = 0.75
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_stalker"]
+size = Vector3(0.6, 2.2, 3.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_torch"]
+size = Vector3(8, 2.4, 0.6)
+
+[sub_resource type="Shader" id="Shader_l4_post"]
+code = "shader_type canvas_item;
+// Grayscale with posterized bands (cel-style), brightened so the rooms stay readable.
+uniform sampler2D screen_tex : hint_screen_texture, filter_nearest;
+// Below 1.0 brightens the dark parts (0.5 = strong lift, 1.0 = none).
+uniform float gamma : hint_range(0.2, 1.5) = 0.6;
+// 1.0 = none. A little above 1.0 deepens the darks and brightens the lights.
+uniform float contrast : hint_range(0.5, 2.0) = 1.15;
+// Number of gray bands (2 = pure black/white).
+uniform int bands : hint_range(2, 8) = 5;
+// 1.0 = hard bands, 0.0 = smooth grayscale.
+uniform float hardness : hint_range(0.0, 1.0) = 0.8;
+// Darkest and brightest gray that can appear.
+uniform float min_tone : hint_range(0.0, 0.5) = 0.08;
+uniform float max_tone : hint_range(0.5, 1.0) = 1.0;
+
+void fragment() {
+	vec3 c = texture(screen_tex, SCREEN_UV).rgb;
+	float l = pow(dot(c, vec3(0.299, 0.587, 0.114)), gamma);
+	l = clamp((l - 0.5) * contrast + 0.5, 0.0, 1.0);
+	float n = float(bands);
+	float q = min(floor(l * n), n - 1.0) / (n - 1.0);
+	float v = mix(l, q, hardness);
+	COLOR = vec4(vec3(mix(min_tone, max_tone, clamp(v, 0.0, 1.0))), 1.0);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l4_post"]
+shader = SubResource("Shader_l4_post")
+shader_parameter/gamma = 0.6
+shader_parameter/contrast = 1.15
+shader_parameter/bands = 5
+shader_parameter/hardness = 0.8
+shader_parameter/min_tone = 0.08
+shader_parameter/max_tone = 1.0
+
+[node name="Level4" type="Node3D" unique_id=1349628775 node_paths=PackedStringArray("player", "seeker", "obstacle", "torch_spawn", "scare_trigger", "stalker_trigger", "torch_death_trigger", "nav_region")]
+script = ExtResource("level4_script")
+player = NodePath("Player")
+seeker = NodePath("Seeker")
+obstacle = NodePath("seeker_room/Obstacle_Destroyable")
+torch_spawn = NodePath("entrance/TorchSpawn")
+scare_trigger = NodePath("seeker_room/ScareTrigger")
+stalker_trigger = NodePath("StalkerTrigger")
+torch_death_trigger = NodePath("TorchDeathTrigger")
+nav_region = NodePath("NavigationRegion3D")
+
+[node name="floor" parent="." unique_id=1270613395 groups=["navigation_mesh_source_group"] instance=ExtResource("1_b15rf")]
 transform = Transform3D(11, 0, 0, 0, 4, 0, 0, 0, 7, -1.6074896, 0, 0)
 
 [node name="floor_vct" parent="floor" index="0" unique_id=431853489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60547763, 0, 0.011703423)
 material_override = SubResource("StandardMaterial3D_t0qhu")
 
-[node name="entrance" type="Node3D" parent="." unique_id=2077129632]
+[node name="entrance" type="Node3D" parent="." unique_id=2077129632 groups=["navigation_mesh_source_group"]]
 
 [node name="entry_left_walls" type="Node3D" parent="entrance" unique_id=1180207026]
 
@@ -245,13 +340,22 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.538666, 0, -1.8716506e-08)
 material_override = SubResource("StandardMaterial3D_8hlpj")
 
-[node name="seeker_room" type="Node3D" parent="." unique_id=245299891]
+[node name="TorchSpawn" type="Marker3D" parent="entrance" unique_id=1098036966]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 0.4)
+
+[node name="seeker_room" type="Node3D" parent="." unique_id=245299891 groups=["navigation_mesh_source_group"]]
+
+[node name="student_chair2" parent="seeker_room" unique_id=1814718375 instance=ExtResource("17_a7qdg")]
+transform = Transform3D(-3.4969112e-08, -0.8, -3.4969112e-08, 0, -3.4969112e-08, 0.8, -0.8, 3.4969112e-08, 1.5285484e-15, 7.8114614, 0.25505352, 2.798262)
+
+[node name="student_chair" parent="seeker_room/student_chair2" index="0" unique_id=1437815947]
+material_override = SubResource("StandardMaterial3D_52a3b")
 
 [node name="seeker_room_exit" type="Node3D" parent="seeker_room" unique_id=1507193327]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 7.9970026, 0, 3.0728114)
 
 [node name="entry_doorway1" parent="seeker_room/seeker_room_exit" unique_id=1037189362 instance=ExtResource("5_hokjj")]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 0)
+transform = Transform3D(-4.8082526e-08, 0, -1, 0, 1, 0, 1.1, 0, -4.371139e-08, 0, 0, 0)
 
 [node name="wall_doorway_class" parent="seeker_room/seeker_room_exit/entry_doorway1" index="0" unique_id=1645337395]
 material_override = SubResource("StandardMaterial3D_dmnu2")
@@ -280,11 +384,11 @@ material_override = SubResource("StandardMaterial3D_04hp8")
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, -1.4258142)
 
 [node name="wall_class_crayon" parent="seeker_room/seeker_room_exit/entry_wall_crayon_l" index="0" unique_id=337140939]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.538666, 0, -1.8716506e-08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6548991, 0, 0)
 material_override = SubResource("StandardMaterial3D_8hlpj")
 
 [node name="seeker_room_left_walls" type="Node3D" parent="seeker_room" unique_id=856681892]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.13747132)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.40381968)
 
 [node name="seeker_room_wall_l1" parent="seeker_room/seeker_room_left_walls" unique_id=341248732 instance=ExtResource("3_t0qhu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335721, 0, -3.1927452)
@@ -350,10 +454,18 @@ transform = Transform3D(-4.8082526e-08, 0, -1, 0, 1.2, 0, 1.1, 0, -4.371139e-08,
 [node name="book_shelf_2" parent="seeker_room" unique_id=178935395 instance=ExtResource("7_ng40l")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1.2, 0, 8.742278e-08, 0, -1, 5.993, 0, 5.311)
 
-[node name="Obstacle_Destroyable" parent="seeker_room" unique_id=522573064 instance=ExtResource("11_04hp8")]
+[node name="Obstacle_Destroyable" parent="seeker_room" unique_id=522573064 groups=["obstacle"] instance=ExtResource("11_04hp8")]
 transform = Transform3D(-0.18297008, 0.50270605, -0.9114033, -0.4052337, 1.1133705, 0.41151434, 1.2216004, 0.44462615, -3.9838703e-08, 6.624079, 0.12322295, 2.6065583)
 
-[node name="hallway" type="Node3D" parent="." unique_id=1683681779]
+[node name="ScareTrigger" type="Area3D" parent="seeker_room" unique_id=1437426896]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 1.1, 0)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="seeker_room/ScareTrigger" unique_id=121779907]
+shape = SubResource("BoxShape3D_scare")
+
+[node name="hallway" type="Node3D" parent="." unique_id=1683681779 groups=["navigation_mesh_source_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.032571, 0, 0.13747132)
 
 [node name="hallway_wall_left" type="Node3D" parent="hallway" unique_id=884194763]
@@ -898,7 +1010,7 @@ material_override = SubResource("StandardMaterial3D_hokjj")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1335726, 0, 5.995053)
 
 [node name="wall_class" parent="hallway/hallway_stalker_room/hallway_wall_l3" index="0" unique_id=1374349983]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.055840492, 0, -0.05408001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08551693, 0, -0.05408001)
 material_override = SubResource("StandardMaterial3D_hokjj")
 
 [node name="hallway_wall_l8" parent="hallway/hallway_stalker_room" unique_id=23030999 instance=ExtResource("3_t0qhu")]
@@ -942,14 +1054,13 @@ transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 30, 5.0689383, 0, 36.515636)
 [node name="floor_vct" parent="hallway/hallway_floor" index="0" unique_id=431853489]
 material_override = SubResource("StandardMaterial3D_qhnv2")
 
-[node name="Flashlight" parent="." unique_id=1076025218 instance=ExtResource("7_0fd8o")]
-transform = Transform3D(0.5656854, 0.56568545, -3.090862e-08, 0, -3.4969112e-08, -1, -0.56568545, 0.5656854, -3.0908616e-08, -4.7089744, 0.03693813, -1.3631771)
-
 [node name="Seeker" parent="." unique_id=295831907 instance=ExtResource("8_dmnu2")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0.7581966, 0, 5.03341)
 
 [node name="Player" parent="." unique_id=1775233132 instance=ExtResource("10_04hp8")]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -5.219764, 0, 0.4929502)
+transform = Transform3D(0, 0, -0.8, 0, 0.8, 0, 0.8, 0, 0, -5.219764, 0, 0.4929502)
+
+[node name="ShoulderCamera" parent="Player" unique_id=367945197 instance=ExtResource("shoulder_cam")]
 
 [node name="Stalker" parent="." unique_id=767159777 instance=ExtResource("12_8hlpj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.058336, 3.6498957e-05, -4.5379663)
@@ -962,6 +1073,1096 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.478304, 3.602212e-05, -4.7
 
 [node name="Stalker4" parent="." unique_id=1000382605 instance=ExtResource("12_8hlpj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.44693, 3.602212e-05, -6.179353)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1990404347]
+navigation_mesh = SubResource("NavigationMesh_l4")
+
+[node name="ceiling" type="Node3D" parent="." unique_id=469607637]
+
+[node name="ceiling_entrance" type="Node3D" parent="ceiling" unique_id=2066471735]
+
+[node name="ceiling_tiles2" parent="ceiling/ceiling_entrance" unique_id=853531632 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles2" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles3" parent="ceiling/ceiling_entrance" unique_id=1355498034 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles3" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles4" parent="ceiling/ceiling_entrance" unique_id=1186571547 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles4" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles8" parent="ceiling/ceiling_entrance" unique_id=1922874230 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles8" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles9" parent="ceiling/ceiling_entrance" unique_id=1579952079 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles9" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles10" parent="ceiling/ceiling_entrance" unique_id=1873405142 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles10" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles5" parent="ceiling/ceiling_entrance" unique_id=301578405 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles5" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles6" parent="ceiling/ceiling_entrance" unique_id=1918360199 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles6" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles7" parent="ceiling/ceiling_entrance" unique_id=1721125301 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/ceiling_entrance/ceiling_tiles7" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="seeker_room" type="Node3D" parent="ceiling" unique_id=1080902835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.968, 0, 0)
+
+[node name="ceiling_tiles2" parent="ceiling/seeker_room" unique_id=1470925578 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles2" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles3" parent="ceiling/seeker_room" unique_id=1622167406 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles3" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles4" parent="ceiling/seeker_room" unique_id=588326114 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles4" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles8" parent="ceiling/seeker_room" unique_id=378527103 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles8" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles9" parent="ceiling/seeker_room" unique_id=833149326 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles9" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles10" parent="ceiling/seeker_room" unique_id=491883456 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles10" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles5" parent="ceiling/seeker_room" unique_id=979428946 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles5" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles6" parent="ceiling/seeker_room" unique_id=1132404366 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles6" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles7" parent="ceiling/seeker_room" unique_id=72849214 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles7" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles11" parent="ceiling/seeker_room" unique_id=1607794869 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1747046, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles11" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38461852, -0.14621335, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles12" parent="ceiling/seeker_room" unique_id=235768092 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4705222, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles12" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles13" parent="ceiling/seeker_room" unique_id=1548695775 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.507915, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles13" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles14" parent="ceiling/seeker_room" unique_id=1477720869 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1747046, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles14" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.37053275, -0.15583467, 0.19573975)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles22" parent="ceiling/seeker_room" unique_id=310864430 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.060144, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles22" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38461852, -0.14621335, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles23" parent="ceiling/seeker_room" unique_id=2021879582 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.060144, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles23" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.37053275, -0.15583467, 0.19573975)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles15" parent="ceiling/seeker_room" unique_id=296148507 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4705222, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles15" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles16" parent="ceiling/seeker_room" unique_id=1189498629 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.507915, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles16" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles17" parent="ceiling/seeker_room" unique_id=1035704867 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles17" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles18" parent="ceiling/seeker_room" unique_id=1405502128 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles18" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles19" parent="ceiling/seeker_room" unique_id=322242290 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles19" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles20" parent="ceiling/seeker_room" unique_id=392448195 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3575492, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles20" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles21" parent="ceiling/seeker_room" unique_id=1886549959 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3575492, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room/ceiling_tiles21" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="seeker_room2" type="Node3D" parent="ceiling" unique_id=1199992435]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.938654, 0, 0)
+
+[node name="ceiling_tiles2" parent="ceiling/seeker_room2" unique_id=1739725762 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles2" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles3" parent="ceiling/seeker_room2" unique_id=1937944386 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles3" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles28" parent="ceiling/seeker_room2" unique_id=646886143 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.454458, 0.15686321, -3.867891)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles28" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles29" parent="ceiling/seeker_room2" unique_id=1651502886 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551983, 0.15686321, -3.867891)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles29" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles4" parent="ceiling/seeker_room2" unique_id=953843636 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles4" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles8" parent="ceiling/seeker_room2" unique_id=253372515 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles8" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles9" parent="ceiling/seeker_room2" unique_id=2023148796 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles9" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles10" parent="ceiling/seeker_room2" unique_id=1351118538 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles10" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles5" parent="ceiling/seeker_room2" unique_id=2003339161 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4544578, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles5" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles6" parent="ceiling/seeker_room2" unique_id=1262227891 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551985, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles6" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles7" parent="ceiling/seeker_room2" unique_id=501216504 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49259126, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles7" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles11" parent="ceiling/seeker_room2" unique_id=2063898183 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4697814, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles11" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles12" parent="ceiling/seeker_room2" unique_id=1312231814 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4705222, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles12" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles13" parent="ceiling/seeker_room2" unique_id=180867996 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.507915, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles13" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles14" parent="ceiling/seeker_room2" unique_id=1883443857 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4697814, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles14" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles15" parent="ceiling/seeker_room2" unique_id=1782787678 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4705222, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles15" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles26" parent="ceiling/seeker_room2" unique_id=810924824 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.469782, 0.15686321, 6.442626)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles26" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles27" parent="ceiling/seeker_room2" unique_id=433092281 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.470522, 0.15686321, 6.442626)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles27" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles30" parent="ceiling/seeker_room2" unique_id=1603674118 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 6.610225)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles30" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles31" parent="ceiling/seeker_room2" unique_id=369380363 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 6.610225)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles31" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles32" parent="ceiling/seeker_room2" unique_id=617502525 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 8.589134)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles32" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles33" parent="ceiling/seeker_room2" unique_id=1887634599 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 8.589134)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles33" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles34" parent="ceiling/seeker_room2" unique_id=1600229491 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 10.548784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles34" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles35" parent="ceiling/seeker_room2" unique_id=420389837 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 10.548784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles35" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles36" parent="ceiling/seeker_room2" unique_id=309490193 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 12.5485)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles36" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles37" parent="ceiling/seeker_room2" unique_id=331983312 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 12.5485)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles37" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles38" parent="ceiling/seeker_room2" unique_id=977321346 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 14.478947)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles38" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles39" parent="ceiling/seeker_room2" unique_id=560557617 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 14.478947)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles39" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles40" parent="ceiling/seeker_room2" unique_id=1808531943 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 16.438597)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles40" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles41" parent="ceiling/seeker_room2" unique_id=1905675355 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 16.438597)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles41" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles42" parent="ceiling/seeker_room2" unique_id=185912875 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 18.438313)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles42" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles43" parent="ceiling/seeker_room2" unique_id=1930432185 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 18.438313)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles43" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles44" parent="ceiling/seeker_room2" unique_id=469806990 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 20.285213)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles44" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles45" parent="ceiling/seeker_room2" unique_id=999520528 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 20.285213)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles45" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles46" parent="ceiling/seeker_room2" unique_id=1877784402 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 22.264122)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles46" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles47" parent="ceiling/seeker_room2" unique_id=1286757934 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 22.264122)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles47" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles48" parent="ceiling/seeker_room2" unique_id=509374509 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 24.223772)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles48" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles49" parent="ceiling/seeker_room2" unique_id=568580709 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 24.223772)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles49" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles50" parent="ceiling/seeker_room2" unique_id=376050301 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 26.223488)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles50" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles51" parent="ceiling/seeker_room2" unique_id=433954983 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 26.223488)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles51" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles52" parent="ceiling/seeker_room2" unique_id=319819366 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 28.153934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles52" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles53" parent="ceiling/seeker_room2" unique_id=829801542 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 28.153934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles53" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles54" parent="ceiling/seeker_room2" unique_id=496416319 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 30.113585)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles54" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles55" parent="ceiling/seeker_room2" unique_id=1449013306 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 30.113585)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles55" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles56" parent="ceiling/seeker_room2" unique_id=1645399931 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 32.1133)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles56" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles57" parent="ceiling/seeker_room2" unique_id=1649449216 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 32.1133)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles57" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles58" parent="ceiling/seeker_room2" unique_id=166953249 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 33.532715)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles58" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles59" parent="ceiling/seeker_room2" unique_id=1791305138 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 33.532715)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles59" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles60" parent="ceiling/seeker_room2" unique_id=762038916 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 35.511623)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles60" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles61" parent="ceiling/seeker_room2" unique_id=1324833609 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 35.511623)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles61" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles62" parent="ceiling/seeker_room2" unique_id=1557602464 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 37.47127)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles62" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles63" parent="ceiling/seeker_room2" unique_id=1281709614 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 37.47127)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles63" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles64" parent="ceiling/seeker_room2" unique_id=1833372701 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 39.47099)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles64" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles65" parent="ceiling/seeker_room2" unique_id=1325431057 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 39.47099)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles65" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles66" parent="ceiling/seeker_room2" unique_id=580275558 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 41.401436)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles66" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles67" parent="ceiling/seeker_room2" unique_id=959019280 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 41.401436)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles67" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles68" parent="ceiling/seeker_room2" unique_id=125281314 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 43.361088)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles68" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles69" parent="ceiling/seeker_room2" unique_id=1361489192 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 43.361088)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles69" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles70" parent="ceiling/seeker_room2" unique_id=1347952253 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 45.3608)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles70" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles71" parent="ceiling/seeker_room2" unique_id=471570254 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 45.3608)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles71" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles72" parent="ceiling/seeker_room2" unique_id=515594410 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 33.532715)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles72" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles73" parent="ceiling/seeker_room2" unique_id=110663509 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 33.532715)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles73" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles74" parent="ceiling/seeker_room2" unique_id=71031336 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 35.511623)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles74" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles75" parent="ceiling/seeker_room2" unique_id=1994498298 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 35.511623)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles75" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles76" parent="ceiling/seeker_room2" unique_id=1670769788 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 37.47127)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles76" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles77" parent="ceiling/seeker_room2" unique_id=1286214339 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 37.47127)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles77" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles78" parent="ceiling/seeker_room2" unique_id=2119200803 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 39.47099)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles78" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles79" parent="ceiling/seeker_room2" unique_id=443265592 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 39.47099)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles79" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles80" parent="ceiling/seeker_room2" unique_id=47130864 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 41.401436)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles80" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles81" parent="ceiling/seeker_room2" unique_id=1065446368 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 41.401436)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles81" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles82" parent="ceiling/seeker_room2" unique_id=2081595315 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 43.361088)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles82" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles83" parent="ceiling/seeker_room2" unique_id=1131742232 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 43.361088)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles83" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles84" parent="ceiling/seeker_room2" unique_id=1000393927 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 45.3608)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles84" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles85" parent="ceiling/seeker_room2" unique_id=1311381294 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 45.3608)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles85" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles86" parent="ceiling/seeker_room2" unique_id=1893275891 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 57.028194)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles86" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles87" parent="ceiling/seeker_room2" unique_id=264019448 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 59.02791)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles87" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles88" parent="ceiling/seeker_room2" unique_id=177616234 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 59.02791)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles88" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles89" parent="ceiling/seeker_room2" unique_id=789932524 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 47.19982)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles89" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles90" parent="ceiling/seeker_room2" unique_id=621802771 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 47.19982)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles90" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles91" parent="ceiling/seeker_room2" unique_id=484916630 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 49.17873)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles91" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles92" parent="ceiling/seeker_room2" unique_id=1628145450 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 49.17873)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles92" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles93" parent="ceiling/seeker_room2" unique_id=1987845654 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 51.13838)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles93" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles94" parent="ceiling/seeker_room2" unique_id=1800902513 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 51.13838)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles94" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles95" parent="ceiling/seeker_room2" unique_id=215544308 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 53.138096)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles95" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles96" parent="ceiling/seeker_room2" unique_id=414949295 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 53.138096)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles96" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles97" parent="ceiling/seeker_room2" unique_id=250010561 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 55.068542)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles97" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles98" parent="ceiling/seeker_room2" unique_id=297718927 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 55.068542)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles98" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles99" parent="ceiling/seeker_room2" unique_id=1355948905 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 57.028194)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles99" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles100" parent="ceiling/seeker_room2" unique_id=558296941 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 57.028194)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles100" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles101" parent="ceiling/seeker_room2" unique_id=559709490 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 59.02791)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles101" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles102" parent="ceiling/seeker_room2" unique_id=971292639 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 59.02791)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles102" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles103" parent="ceiling/seeker_room2" unique_id=1115961706 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 66.975174)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles103" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles104" parent="ceiling/seeker_room2" unique_id=1193990460 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 68.9749)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles104" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles105" parent="ceiling/seeker_room2" unique_id=1878603622 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 68.9749)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles105" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles106" parent="ceiling/seeker_room2" unique_id=1194699347 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 57.146805)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles106" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles107" parent="ceiling/seeker_room2" unique_id=1594887453 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 57.146805)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles107" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles108" parent="ceiling/seeker_room2" unique_id=2071495610 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 59.125713)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles108" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles109" parent="ceiling/seeker_room2" unique_id=97949792 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 59.125713)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles109" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles110" parent="ceiling/seeker_room2" unique_id=1362393804 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 61.08536)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles110" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles111" parent="ceiling/seeker_room2" unique_id=1110480566 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 61.08536)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles111" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles112" parent="ceiling/seeker_room2" unique_id=253729393 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 63.085083)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles112" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles113" parent="ceiling/seeker_room2" unique_id=22928494 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 63.085083)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles113" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles114" parent="ceiling/seeker_room2" unique_id=976054125 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 65.015526)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles114" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles115" parent="ceiling/seeker_room2" unique_id=1610188366 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 65.015526)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles115" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles116" parent="ceiling/seeker_room2" unique_id=1965865504 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 66.975174)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles116" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles117" parent="ceiling/seeker_room2" unique_id=181497889 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 66.975174)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles117" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles118" parent="ceiling/seeker_room2" unique_id=107356748 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7501421, 0.15686321, 68.9749)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles118" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles119" parent="ceiling/seeker_room2" unique_id=1904358439 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2491179, 0.15686321, 68.9749)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles119" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles16" parent="ceiling/seeker_room2" unique_id=789412677 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.507915, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles16" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles17" parent="ceiling/seeker_room2" unique_id=1926354472 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, -2.0998335)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles17" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles22" parent="ceiling/seeker_room2" unique_id=1350020717 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1899366, 0.15686321, -5.808701)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles22" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles23" parent="ceiling/seeker_room2" unique_id=53544691 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8093233, 0.15686321, -5.808701)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles23" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles24" parent="ceiling/seeker_room2" unique_id=1961623114 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.81768703, 0.15686321, -3.9652615)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles24" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles25" parent="ceiling/seeker_room2" unique_id=1877146286 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0477772, 0.15686321, -3.9652615)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles25" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles18" parent="ceiling/seeker_room2" unique_id=5261427 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, -0.1337161)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles18" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles19" parent="ceiling/seeker_room2" unique_id=1068022139 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3728728, 0.15686321, 1.8562338)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles19" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles20" parent="ceiling/seeker_room2" unique_id=28970363 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3575492, 0.15686321, 2.9257934)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles20" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_tiles21" parent="ceiling/seeker_room2" unique_id=264695324 instance=ExtResource("14_5oqfd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3575492, 0.15686321, 4.6490784)
+
+[node name="ceiling_tiles" parent="ceiling/seeker_room2/ceiling_tiles21" index="0" unique_id=1624866933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3675313, -0.11205399, 0.19573998)
+surface_material_override/0 = SubResource("StandardMaterial3D_eqxkv")
+
+[node name="ceiling_light2" parent="." unique_id=1493889099 instance=ExtResource("16_8mt0c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2768383, 0.09828836, 0.10317254)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=479512985]
+environment = SubResource("Environment_l4")
+
+[node name="StalkerTrigger" type="Area3D" parent="." unique_id=562132311]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 1.1, 3.2)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StalkerTrigger" unique_id=1837546810]
+shape = SubResource("BoxShape3D_stalker")
+
+[node name="TorchDeathTrigger" type="Area3D" parent="." unique_id=180531465]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1, 1.2, 30)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorchDeathTrigger" unique_id=234213435]
+shape = SubResource("BoxShape3D_torch")
+
+[node name="PostFX" type="CanvasLayer" parent="." unique_id=63259348]
+layer = 10
+
+[node name="LightDark" type="ColorRect" parent="PostFX" unique_id=1862995261]
+material = SubResource("ShaderMaterial_l4_post")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [editable path="floor"]
 [editable path="entrance/entry_left_walls/entry_wall_l1"]
@@ -976,6 +2177,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.44693, 3.602212e-05, -6.17
 [editable path="entrance/entry_doorway/entry_wall_crayon_r1"]
 [editable path="entrance/entry_doorway/entry_wall_crayon_r2"]
 [editable path="entrance/entry_doorway/entry_wall_crayon_l"]
+[editable path="seeker_room/student_chair2"]
 [editable path="seeker_room/seeker_room_exit/entry_doorway1"]
 [editable path="seeker_room/seeker_room_exit/entry_wall_crayon_r1"]
 [editable path="seeker_room/seeker_room_exit/entry_wall_crayon_r2"]
@@ -1067,3 +2269,152 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.44693, 3.602212e-05, -6.17
 [editable path="hallway/hallway_stalker_room/hallway_wall_l5"]
 [editable path="hallway/hallway_stalker_room/hallway_wall_l7"]
 [editable path="hallway/hallway_floor"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles2"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles3"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles4"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles8"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles9"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles10"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles5"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles6"]
+[editable path="ceiling/ceiling_entrance/ceiling_tiles7"]
+[editable path="ceiling/seeker_room/ceiling_tiles2"]
+[editable path="ceiling/seeker_room/ceiling_tiles3"]
+[editable path="ceiling/seeker_room/ceiling_tiles4"]
+[editable path="ceiling/seeker_room/ceiling_tiles8"]
+[editable path="ceiling/seeker_room/ceiling_tiles9"]
+[editable path="ceiling/seeker_room/ceiling_tiles10"]
+[editable path="ceiling/seeker_room/ceiling_tiles5"]
+[editable path="ceiling/seeker_room/ceiling_tiles6"]
+[editable path="ceiling/seeker_room/ceiling_tiles7"]
+[editable path="ceiling/seeker_room/ceiling_tiles11"]
+[editable path="ceiling/seeker_room/ceiling_tiles12"]
+[editable path="ceiling/seeker_room/ceiling_tiles13"]
+[editable path="ceiling/seeker_room/ceiling_tiles14"]
+[editable path="ceiling/seeker_room/ceiling_tiles22"]
+[editable path="ceiling/seeker_room/ceiling_tiles23"]
+[editable path="ceiling/seeker_room/ceiling_tiles15"]
+[editable path="ceiling/seeker_room/ceiling_tiles16"]
+[editable path="ceiling/seeker_room/ceiling_tiles17"]
+[editable path="ceiling/seeker_room/ceiling_tiles18"]
+[editable path="ceiling/seeker_room/ceiling_tiles19"]
+[editable path="ceiling/seeker_room/ceiling_tiles20"]
+[editable path="ceiling/seeker_room/ceiling_tiles21"]
+[editable path="ceiling/seeker_room2/ceiling_tiles2"]
+[editable path="ceiling/seeker_room2/ceiling_tiles3"]
+[editable path="ceiling/seeker_room2/ceiling_tiles28"]
+[editable path="ceiling/seeker_room2/ceiling_tiles29"]
+[editable path="ceiling/seeker_room2/ceiling_tiles4"]
+[editable path="ceiling/seeker_room2/ceiling_tiles8"]
+[editable path="ceiling/seeker_room2/ceiling_tiles9"]
+[editable path="ceiling/seeker_room2/ceiling_tiles10"]
+[editable path="ceiling/seeker_room2/ceiling_tiles5"]
+[editable path="ceiling/seeker_room2/ceiling_tiles6"]
+[editable path="ceiling/seeker_room2/ceiling_tiles7"]
+[editable path="ceiling/seeker_room2/ceiling_tiles11"]
+[editable path="ceiling/seeker_room2/ceiling_tiles12"]
+[editable path="ceiling/seeker_room2/ceiling_tiles13"]
+[editable path="ceiling/seeker_room2/ceiling_tiles14"]
+[editable path="ceiling/seeker_room2/ceiling_tiles15"]
+[editable path="ceiling/seeker_room2/ceiling_tiles26"]
+[editable path="ceiling/seeker_room2/ceiling_tiles27"]
+[editable path="ceiling/seeker_room2/ceiling_tiles30"]
+[editable path="ceiling/seeker_room2/ceiling_tiles31"]
+[editable path="ceiling/seeker_room2/ceiling_tiles32"]
+[editable path="ceiling/seeker_room2/ceiling_tiles33"]
+[editable path="ceiling/seeker_room2/ceiling_tiles34"]
+[editable path="ceiling/seeker_room2/ceiling_tiles35"]
+[editable path="ceiling/seeker_room2/ceiling_tiles36"]
+[editable path="ceiling/seeker_room2/ceiling_tiles37"]
+[editable path="ceiling/seeker_room2/ceiling_tiles38"]
+[editable path="ceiling/seeker_room2/ceiling_tiles39"]
+[editable path="ceiling/seeker_room2/ceiling_tiles40"]
+[editable path="ceiling/seeker_room2/ceiling_tiles41"]
+[editable path="ceiling/seeker_room2/ceiling_tiles42"]
+[editable path="ceiling/seeker_room2/ceiling_tiles43"]
+[editable path="ceiling/seeker_room2/ceiling_tiles44"]
+[editable path="ceiling/seeker_room2/ceiling_tiles45"]
+[editable path="ceiling/seeker_room2/ceiling_tiles46"]
+[editable path="ceiling/seeker_room2/ceiling_tiles47"]
+[editable path="ceiling/seeker_room2/ceiling_tiles48"]
+[editable path="ceiling/seeker_room2/ceiling_tiles49"]
+[editable path="ceiling/seeker_room2/ceiling_tiles50"]
+[editable path="ceiling/seeker_room2/ceiling_tiles51"]
+[editable path="ceiling/seeker_room2/ceiling_tiles52"]
+[editable path="ceiling/seeker_room2/ceiling_tiles53"]
+[editable path="ceiling/seeker_room2/ceiling_tiles54"]
+[editable path="ceiling/seeker_room2/ceiling_tiles55"]
+[editable path="ceiling/seeker_room2/ceiling_tiles56"]
+[editable path="ceiling/seeker_room2/ceiling_tiles57"]
+[editable path="ceiling/seeker_room2/ceiling_tiles58"]
+[editable path="ceiling/seeker_room2/ceiling_tiles59"]
+[editable path="ceiling/seeker_room2/ceiling_tiles60"]
+[editable path="ceiling/seeker_room2/ceiling_tiles61"]
+[editable path="ceiling/seeker_room2/ceiling_tiles62"]
+[editable path="ceiling/seeker_room2/ceiling_tiles63"]
+[editable path="ceiling/seeker_room2/ceiling_tiles64"]
+[editable path="ceiling/seeker_room2/ceiling_tiles65"]
+[editable path="ceiling/seeker_room2/ceiling_tiles66"]
+[editable path="ceiling/seeker_room2/ceiling_tiles67"]
+[editable path="ceiling/seeker_room2/ceiling_tiles68"]
+[editable path="ceiling/seeker_room2/ceiling_tiles69"]
+[editable path="ceiling/seeker_room2/ceiling_tiles70"]
+[editable path="ceiling/seeker_room2/ceiling_tiles71"]
+[editable path="ceiling/seeker_room2/ceiling_tiles72"]
+[editable path="ceiling/seeker_room2/ceiling_tiles73"]
+[editable path="ceiling/seeker_room2/ceiling_tiles74"]
+[editable path="ceiling/seeker_room2/ceiling_tiles75"]
+[editable path="ceiling/seeker_room2/ceiling_tiles76"]
+[editable path="ceiling/seeker_room2/ceiling_tiles77"]
+[editable path="ceiling/seeker_room2/ceiling_tiles78"]
+[editable path="ceiling/seeker_room2/ceiling_tiles79"]
+[editable path="ceiling/seeker_room2/ceiling_tiles80"]
+[editable path="ceiling/seeker_room2/ceiling_tiles81"]
+[editable path="ceiling/seeker_room2/ceiling_tiles82"]
+[editable path="ceiling/seeker_room2/ceiling_tiles83"]
+[editable path="ceiling/seeker_room2/ceiling_tiles84"]
+[editable path="ceiling/seeker_room2/ceiling_tiles85"]
+[editable path="ceiling/seeker_room2/ceiling_tiles86"]
+[editable path="ceiling/seeker_room2/ceiling_tiles87"]
+[editable path="ceiling/seeker_room2/ceiling_tiles88"]
+[editable path="ceiling/seeker_room2/ceiling_tiles89"]
+[editable path="ceiling/seeker_room2/ceiling_tiles90"]
+[editable path="ceiling/seeker_room2/ceiling_tiles91"]
+[editable path="ceiling/seeker_room2/ceiling_tiles92"]
+[editable path="ceiling/seeker_room2/ceiling_tiles93"]
+[editable path="ceiling/seeker_room2/ceiling_tiles94"]
+[editable path="ceiling/seeker_room2/ceiling_tiles95"]
+[editable path="ceiling/seeker_room2/ceiling_tiles96"]
+[editable path="ceiling/seeker_room2/ceiling_tiles97"]
+[editable path="ceiling/seeker_room2/ceiling_tiles98"]
+[editable path="ceiling/seeker_room2/ceiling_tiles99"]
+[editable path="ceiling/seeker_room2/ceiling_tiles100"]
+[editable path="ceiling/seeker_room2/ceiling_tiles101"]
+[editable path="ceiling/seeker_room2/ceiling_tiles102"]
+[editable path="ceiling/seeker_room2/ceiling_tiles103"]
+[editable path="ceiling/seeker_room2/ceiling_tiles104"]
+[editable path="ceiling/seeker_room2/ceiling_tiles105"]
+[editable path="ceiling/seeker_room2/ceiling_tiles106"]
+[editable path="ceiling/seeker_room2/ceiling_tiles107"]
+[editable path="ceiling/seeker_room2/ceiling_tiles108"]
+[editable path="ceiling/seeker_room2/ceiling_tiles109"]
+[editable path="ceiling/seeker_room2/ceiling_tiles110"]
+[editable path="ceiling/seeker_room2/ceiling_tiles111"]
+[editable path="ceiling/seeker_room2/ceiling_tiles112"]
+[editable path="ceiling/seeker_room2/ceiling_tiles113"]
+[editable path="ceiling/seeker_room2/ceiling_tiles114"]
+[editable path="ceiling/seeker_room2/ceiling_tiles115"]
+[editable path="ceiling/seeker_room2/ceiling_tiles116"]
+[editable path="ceiling/seeker_room2/ceiling_tiles117"]
+[editable path="ceiling/seeker_room2/ceiling_tiles118"]
+[editable path="ceiling/seeker_room2/ceiling_tiles119"]
+[editable path="ceiling/seeker_room2/ceiling_tiles16"]
+[editable path="ceiling/seeker_room2/ceiling_tiles17"]
+[editable path="ceiling/seeker_room2/ceiling_tiles22"]
+[editable path="ceiling/seeker_room2/ceiling_tiles23"]
+[editable path="ceiling/seeker_room2/ceiling_tiles24"]
+[editable path="ceiling/seeker_room2/ceiling_tiles25"]
+[editable path="ceiling/seeker_room2/ceiling_tiles18"]
+[editable path="ceiling/seeker_room2/ceiling_tiles19"]
+[editable path="ceiling/seeker_room2/ceiling_tiles20"]
+[editable path="ceiling/seeker_room2/ceiling_tiles21"]

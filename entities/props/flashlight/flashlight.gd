@@ -50,6 +50,8 @@ const EDGE_MARGIN := 0.9
 @onready var _light: SpotLight3D = $TorchLight
 
 var _is_on := true
+## A broken torch cannot be switched on (see break_light()).
+var _broken := false
 var _held := true
 var _check_timer := 0.0
 
@@ -117,6 +119,8 @@ func set_beam_fixed(value: bool) -> void:
 
 
 func set_light_on(value: bool) -> void:
+	if value and _broken:
+		return
 	if _is_on == value:
 		return
 
@@ -127,6 +131,20 @@ func set_light_on(value: bool) -> void:
 
 func toggle() -> void:
 	set_light_on(not _is_on)
+
+
+## The torch dies: light off, and F / respawn cannot turn it back on.
+func break_light() -> void:
+	_broken = true
+	set_light_on(false)
+
+
+func repair() -> void:
+	_broken = false
+
+
+func is_broken() -> bool:
+	return _broken
 
 
 ## Where the beam sits when it simply follows the torch.

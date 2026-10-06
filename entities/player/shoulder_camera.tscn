@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/player/shoulder_camera.gd" id="1_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cam"]
+radius = 0.2
+
+[node name="ShoulderCamera" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="."]
+shape = SubResource("SphereShape3D_cam")
+spring_length = 2.6
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+fov = 70.0
+near = 0.05
